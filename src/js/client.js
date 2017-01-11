@@ -2,14 +2,13 @@ const google = google;
 
 function Map(){
 
-  // this.northernLineStationsArray = [];
   this.originIndex = 0;
   this.destinationIndex = 1;
 
 
   this.initMap = function initMap() {
-    this.northernLineStationsArray = this.getStationsLatLngArray('northern');
-    // console.log(this.northernLineStationsArray);
+    this.northernLineStationsObject = this.getStationsLatLngObject('northern');
+    this.journeyStationsArray = this.getJourneyStationsArray('51.61366277638,-0.27510069015', 'Morden Underground Station');
     this.directionsService = new google.maps.DirectionsService;
     this.directionsDisplay = new google.maps.DirectionsRenderer;
     this.map = new google.maps.Map(document.getElementById('map'), {
@@ -123,6 +122,10 @@ function Map(){
         polyline = null;
         window.clearInterval(intervalId);
         tubeMap.initNextSection();
+        console.log(this.originIndex);
+        tubeMap.originIndex += 1;
+        console.log(this.originIndex);
+        tubeMap.destinationIndex += 1;
         return;
       }
       // polyline.icons[0].offset = (count) + '%';
@@ -135,8 +138,8 @@ function Map(){
 
     this.directionsService = new google.maps.DirectionsService;
     this.directionsService.route({
-      origin: this.northernLineStationsArray[this.originIndex],
-      destination: this.northernLineStationsArray[this.destinationIndex],
+      origin: this.northernLineStationsObject[this.journeyStationsArray[this.originIndex]],
+      destination: this.northernLineStationsObject[this.journeyStationsArray[this.destinationIndex]],
       travelMode: 'TRANSIT'
     }, function(response, status){
       if (status === 'OK') {
@@ -171,25 +174,33 @@ function Map(){
 
   };
 
-  this.getStationsLatLngArray = function getStationsLatLngArray(line){
-    const array = [];
+  this.getStationsLatLngObject = function getStationsLatLngObject(line){
+    const object = {};
     $.get(`http://localhost:3000/api/lines/${line}`)
       .done(stations => {
         $.each(stations, (index, station) => {
-          array.push({
+          object[station.commonName] = {
             lat: station.lat,
             lng: station.lon
-          });
+          };
         });
-        // tubeMap.northernLineStationsArray = array;
+      });
+    return object;
+  };
+
+  this.getJourneyStationsArray = function getJourneyStationsArray(from, to){
+    const array = [];
+    $.get(`http://localhost:3000/api/lines/${from}/${to}`)
+      .done(route => {
+        this.tflroute = route;
+        const stations = tubeMap.tflroute.journeys[0].legs[1].path.stopPoints;
+        $.each(stations, (index, station) => {
+          array.push(station.name);
+        });
       });
     return array;
   };
 
-  this.returnThis = function(hereeee){
-    console.log(hereeee);
-    return hereeee;
-  };
 
 }
 

@@ -10,6 +10,17 @@ const port     = process.env.PORT || 3000;
 app.use(express.static(`${__dirname}/public`));
 app.use(cors());
 
+app.get('/api/lines/:from/:to', (req, res) => {
+  return rp(`https://api.tfl.gov.uk/Journey/JourneyResults/${req.params.from}/to/${req.params.to}?date=20170111&time=2045&journeyPreference=LeastInterchange&mode=tube&accessibilityPreference=NoSolidStairs&walkingOptimization=false&app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
+    .then(htmlString => {
+      const data = JSON.parse(htmlString);
+      return res.status(200).json(data);
+    })
+    .catch(err => {
+      return res.status(500).json(err);
+    });
+});
+
 app.get('/api/lines/:line', (req, res) => {
   return rp(`https://api.tfl.gov.uk/Line/${req.params.line}/StopPoints?app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
     .then(htmlString => {
@@ -20,6 +31,8 @@ app.get('/api/lines/:line', (req, res) => {
       return res.status(500).json(err);
     });
 });
+
+
 
 
 app.use('/', routes);
