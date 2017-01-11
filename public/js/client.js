@@ -107,6 +107,8 @@ function Map() {
 
   this.animateIcon = function animateIcon(polyline, delay, duration) {
     var count = 0;
+    tubeMap.originIndex += 1;
+    tubeMap.destinationIndex += 1;
     //set time out = delay
     var numberOfIntervals = duration / 20;
     var distancePercentagePerInterval = 100 / numberOfIntervals;
@@ -121,10 +123,7 @@ function Map() {
         polyline = null;
         window.clearInterval(intervalId);
         tubeMap.initNextSection();
-        console.log(this.originIndex);
-        tubeMap.originIndex += 1;
-        console.log(this.originIndex);
-        tubeMap.destinationIndex += 1;
+
         return;
       }
       // polyline.icons[0].offset = (count) + '%';
@@ -190,6 +189,7 @@ function Map() {
     var array = [];
     $.get('http://localhost:3000/api/lines/' + from + '/' + to).done(function (route) {
       _this.tflroute = route;
+      array.push(tubeMap.tflroute.journeys[0].legs[1].departurePoint.commonName);
       var stations = tubeMap.tflroute.journeys[0].legs[1].path.stopPoints;
       $.each(stations, function (index, station) {
         array.push(station.name);
