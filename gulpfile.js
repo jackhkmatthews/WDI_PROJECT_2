@@ -10,7 +10,7 @@ const browserSync = require('browser-sync').create();
 gulp.task('es6', () => {
   return gulp.src('src/js/*.js')
   .pipe(babel({ presets: ['es2015'] }))
-  .pipe(uglify())
+  // .pipe(uglify())
   .pipe(gulp.dest('public/js'));
 });
 
