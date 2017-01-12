@@ -4,6 +4,7 @@ function Map(){
 
   this.originIndex = 0;
   this.destinationIndex = 1;
+  this.direction = 'Southbound';
 
 
   this.initMap = function initMap() {
@@ -25,7 +26,7 @@ function Map(){
     this.calculateAndDisplayRoute(this.directionsService, this.directionsDisplay);
   };
 
-  this.calculateAndDisplayRoute = function calculateAndDisplayRoute(directionsService, directionsDisplay) {
+  this.calculateAndDisplayRoute = function calculateAndDisplayRoute(directionsService) {
 
     directionsService.route({
       origin: document.getElementById('start').value,
@@ -34,7 +35,6 @@ function Map(){
     }, function(response, status){
       if (status === 'OK') {
         tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
-
         tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, null, tubeMap.map);
 
         tubeMap.pathPolyLine.setMap(tubeMap.map);
@@ -43,45 +43,15 @@ function Map(){
 
     this.initNextSection();
 
-    // directionsService.route({
-    //   origin: document.getElementById('start').value,
-    //   destination: document.getElementById('end').value,
-    //   travelMode: 'TRANSIT'
-    // }, function(response, status){
-    //   if (status === 'OK') {
-    //     // directionsDisplay.setDirections(response);
-    //
-    //     tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
-    //
-    //     tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
-    //       icon: {
-    //         path: google.maps.SymbolPath.CIRCLE,
-    //         scale: 8,
-    //         strokeColor: '#393'
-    //       },
-    //       offset: '0%'
-    //     }], tubeMap.map);
-    //
-    //     tubeMap.pathPolyLine.setMap(tubeMap.map);
-    //
-    //     const departureTime = response.routes[0].legs[0].departure_time.value;
-    //     const arrivalTime = response.routes[0].legs[0].arrival_time.value;
-    //     const durationSecs = response.routes[0].legs[0].duration.value;
-    //
-    //     const delay = departureTime - Date.now();
-    //     const duration = durationSecs * 1000;
-    //
-    //     tubeMap.animateIcon(tubeMap.pathPolyLine, delay, duration);
-    //
-    //   } else {
-    //     window.alert('Directions request failed due to ' + status);
-    //   }
-    // });
   };
 
   this.getPolylinePath = function getPolylinePath(routeResponse){
     var route = routeResponse;
-    var pathLatLngs = route.routes[0].legs[0].steps[0].lat_lngs;
+    for (var i = 0; i < route.routes[0].legs[0].steps.length; i++) {
+      if (route.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT'){
+        var pathLatLngs = route.routes[0].legs[0].steps[i].lat_lngs;
+      }
+    }
     var pathCoordinates = [];
     $.each(pathLatLngs, (index, element) => {
       var pathCoordinate = {
@@ -106,7 +76,7 @@ function Map(){
     return polyline;
   };
 
-  this.animateIcon = function animateIcon(polyline, delay, duration) {
+  this.animateIcon = function animateIcon(polyline, duration, delay) {
     let count = 0;
     tubeMap.originIndex += 1;
     tubeMap.destinationIndex += 1;
@@ -114,27 +84,28 @@ function Map(){
     const numberOfIntervals = duration / 20;
     const distancePercentagePerInterval = 100 / numberOfIntervals;
 
-    // setTimeout(intervalId, delay);
+    const intervalId = function intervalId(){
+      const interval = setInterval(function() {
+        // count = (count + distancePercentagePerInterval) % 100;
+        count = (count + 1) % 200;
+        if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
+          polyline.setMap(null);
+          polyline = null;
+          clearInterval(interval);
+          tubeMap.initNextSection();
+          return;
+        }
+        // polyline.icons[0].offset = (count) + '%';
+        polyline.icons[0].offset = (count / 2) + '%';
+        polyline.set('icons', polyline.icons);
+      }, 20);
+    };
 
-    const intervalId = window.setInterval(function animate() {
-      // count = (count + distancePercentagePerInterval) % 100;
-      count = (count + 1) % 200;
-      if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
-        polyline.setMap(null);
-        polyline = null;
-        window.clearInterval(intervalId);
-        tubeMap.initNextSection();
+    setTimeout(intervalId, delay);
 
-        return;
-      }
-      // polyline.icons[0].offset = (count) + '%';
-      polyline.icons[0].offset = (count / 2) + '%';
-      polyline.set('icons', polyline.icons);
-    }, 20);
   };
 
   this.initNextSection = function initNextSection(){
-
     this.directionsService = new google.maps.DirectionsService;
     this.directionsService.route({
       origin: this.northernLineStationsObject[this.journeyStationsArray[this.originIndex]],
@@ -142,8 +113,6 @@ function Map(){
       travelMode: 'TRANSIT'
     }, function(response, status){
       if (status === 'OK') {
-        // directionsDisplay.setDirections(response);
-
         tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
 
         tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
@@ -157,14 +126,23 @@ function Map(){
 
         tubeMap.pathPolyLine.setMap(tubeMap.map);
 
-        const departureTime = response.routes[0].legs[0].departure_time.value;
-        const arrivalTime = response.routes[0].legs[0].arrival_time.value;
-        const durationSecs = response.routes[0].legs[0].duration.value;
+        tubeMap.nextArrival = tubeMap.getStationsNextArrival(tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id, tubeMap.direction);
 
-        const delay = departureTime - Date.now();
+        // const delay = tubeMap.nextArrival.timeToStation*1000;
+        console.log(tubeMap.nextArrival);
+
+        let durationSecs;
+        for (var i = 0; i < response.routes[0].legs[0].steps.length; i++) {
+          if (response.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT'){
+            durationSecs = response.routes[0].legs[0].steps[i].duration.value;
+          }
+        }
+
         const duration = durationSecs * 1000;
 
-        tubeMap.animateIcon(tubeMap.pathPolyLine, delay, duration);
+        // console.log(delay/1000);
+
+        tubeMap.animateIcon(tubeMap.pathPolyLine, duration, 1000);
 
       } else {
         window.alert('Directions request failed due to ' + status);
@@ -180,11 +158,22 @@ function Map(){
         $.each(stations, (index, station) => {
           object[station.commonName] = {
             lat: station.lat,
-            lng: station.lon
+            lng: station.lon,
+            id: station.id
           };
         });
       });
     return object;
+  };
+
+  this.getStationsNextArrival = function getStationsNextArrival(stationId, destinationId){
+    let nextArrival = {};
+    $.get(`http://localhost:3000/api/StopPoint/${stationId}/Arrivals/${destinationId}`)
+      .done(response => {
+        nextArrival = response;
+        console.log(nextArrival);
+        return nextArrival;
+      });
   };
 
   this.getJourneyStationsArray = function getJourneyStationsArray(from, to){
