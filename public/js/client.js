@@ -105,7 +105,6 @@ function Map() {
           console.log('duration from function:', duration);
           console.log('tubeMap.getStationsNextArrival');
           tubeMap.getStationsNextArrival(tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id, tubeMap.direction, function (nextArrival) {
-            // console.log('OI', nextArrival);
             tubeMap.nextArrival = nextArrival;
             var delay = tubeMap.nextArrival.timeToStation * 1000;
             console.log('delay secs', delay / 1000);
