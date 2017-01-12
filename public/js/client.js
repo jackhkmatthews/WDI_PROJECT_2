@@ -88,21 +88,28 @@ function Map() {
       travelMode: 'TRANSIT'
     }, function (response, status) {
       if (status === 'OK') {
-        tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
-        tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            strokeColor: '#393'
-          },
-          offset: '0%'
-        }], tubeMap.map);
-        tubeMap.pathPolyLine.setMap(tubeMap.map);
-        var duration = tubeMap.getDuration(response);
-        tubeMap.nextArrival = tubeMap.getStationsNextArrival(tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id, tubeMap.direction);
-        // const delay = tubeMap.nextArrival.timeToStation*1000;
-        tubeMap.animateIcon(tubeMap.pathPolyLine, duration, 1000);
-        // tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
+        (function () {
+          tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
+          tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
+            icon: {
+              path: google.maps.SymbolPath.CIRCLE,
+              scale: 8,
+              strokeColor: '#393'
+            },
+            offset: '0%'
+          }], tubeMap.map);
+          tubeMap.pathPolyLine.setMap(tubeMap.map);
+          var duration = tubeMap.getDuration(response);
+          tubeMap.getStationsNextArrival(tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id, tubeMap.direction, function (nextArrival) {
+            // console.log('OI', nextArrival);
+            tubeMap.nextArrival = nextArrival;
+            var delay = tubeMap.nextArrival.timeToStation * 1000;
+            console.log('icon', tubeMap.pathPolyLine.icons[0]);
+            console.log('delay over 10', delay / 10);
+            tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay / 10);
+          });
+          // tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
+        })();
       } else {
         window.alert('Directions request failed due to ' + status);
       }
@@ -181,11 +188,11 @@ function Map() {
 
   //returns the train arrivng soonest to specified stopPoint
   //in specified direction
-  this.getStationsNextArrival = function getStationsNextArrival(stationId, destinationId) {
+  this.getStationsNextArrival = function getStationsNextArrival(stationId, destinationId, callback) {
     var nextArrival = {};
     $.get('http://localhost:3000/api/StopPoint/' + stationId + '/Arrivals/' + destinationId).done(function (response) {
       nextArrival = response;
-      return nextArrival;
+      return callback(nextArrival);
     });
   };
 
@@ -207,6 +214,7 @@ function Map() {
       var interval = setInterval(function () {
         // count += countIncriment;
         count = (count + 1) % 200;
+        // console.log('polyline', polyline);
         if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
           tubeMap.removeOldSectionInitNew(polyline, interval);
           return;
