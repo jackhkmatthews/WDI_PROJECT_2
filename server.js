@@ -17,6 +17,8 @@ app.get('/api/lines/:from/:to', (req, res) => {
       return res.status(200).json(data);
     })
     .catch(err => {
+      res.redirect(`/api/line/${req.params.from}/${req.params.to}`);
+      console.log('redirected to try again');
       return res.status(500).json(err);
     });
 });
@@ -28,18 +30,22 @@ app.get('/api/StopPoint/:stationId/Arrivals/:direction', (req, res) => {
 
       const directionTrains = [];
 
-      console.log(data);
       for (var i = 0; i < data.length; i++) {
-        console.log(req.params.direction);
-        console.log(data[i].platformName);
-        console.log(data[i].currentLocation);
         if (data[i].platformName.includes(req.params.direction)){
           directionTrains.push(data[i]);
         }
       }
 
       let nextArrival = directionTrains[0];
-      const nextArrivalTime = nextArrival.timeToStation;
+      if (nextArrival) {
+        var nextArrivalTime = nextArrival.timeToStation;
+      } else {
+        console.log(`no trains in the direction. ${nextArrival}, is undefined`);
+        setTimeout(function(){
+          res.redirect(`/api/StopPoint/${req.params.stationId}/Arrivals/${req.params.direction}`);
+        }, 5000);
+        console.log('redirected to try again');
+      }
 
       for (var j = 0; j < directionTrains.length; j++) {
         if (directionTrains[j].timeToStation < nextArrivalTime){

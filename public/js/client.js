@@ -43,7 +43,7 @@ function Map() {
   // calculate and display joruney route and trigger
   //sequential setDirections and animations
   this.onChangeHandler = function onChangeHandler() {
-    this.calculateAndDisplayRoute(this.directionsService);
+    this.calculateAndDisplayRoute(this.directionsService, this.initNextSection);
   };
 
   //use google direction service to request route
@@ -52,7 +52,7 @@ function Map() {
   //attach journey polyline to map
   //initialise next/first section of journey
   //which will hold animated icon
-  this.calculateAndDisplayRoute = function calculateAndDisplayRoute(directionsService) {
+  this.calculateAndDisplayRoute = function calculateAndDisplayRoute(directionsService, callback) {
     directionsService.route({
       origin: document.getElementById('start').value,
       destination: this.destinationCommonName,
@@ -63,8 +63,8 @@ function Map() {
         tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.journeyCoordinates, false, '#000', 0.8, 3, null, tubeMap.map);
         tubeMap.pathPolyLine.setMap(tubeMap.map);
       }
+      callback();
     });
-    this.initNextSection();
   };
 
   //makes new google route request based on journey stations array
@@ -81,14 +81,16 @@ function Map() {
   //animate icon on current section polyline with correct
   //duration and delay from requests to google and tfl
   this.initNextSection = function initNextSection() {
-    this.directionsService = new google.maps.DirectionsService();
-    this.directionsService.route({
-      origin: this.northernLineStationsObject[this.journeyStationsArray[this.originIndex]],
-      destination: this.northernLineStationsObject[this.journeyStationsArray[this.destinationIndex]],
+    console.log('inside initNextSection');
+    tubeMap.directionsService = new google.maps.DirectionsService();
+    tubeMap.directionsService.route({
+      origin: tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]],
+      destination: tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.destinationIndex]],
       travelMode: 'TRANSIT'
     }, function (response, status) {
       if (status === 'OK') {
         (function () {
+          console.log('google response for next section', response);
           tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
           tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
             icon: {
@@ -100,14 +102,16 @@ function Map() {
           }], tubeMap.map);
           tubeMap.pathPolyLine.setMap(tubeMap.map);
           var duration = tubeMap.getDuration(response);
+          console.log('duration from function:', duration);
+          console.log('tubeMap.getStationsNextArrival');
           tubeMap.getStationsNextArrival(tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id, tubeMap.direction, function (nextArrival) {
             // console.log('OI', nextArrival);
             tubeMap.nextArrival = nextArrival;
             var delay = tubeMap.nextArrival.timeToStation * 1000;
-            console.log('icon', tubeMap.pathPolyLine.icons[0]);
-            console.log('delay over 10', delay / 10);
-            tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay / 10);
+            console.log('delay secs', delay / 1000);
+            tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
           });
+          console.log('after getStationsNextArrival');
           // tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
         })();
       } else {
@@ -189,8 +193,10 @@ function Map() {
   //returns the train arrivng soonest to specified stopPoint
   //in specified direction
   this.getStationsNextArrival = function getStationsNextArrival(stationId, destinationId, callback) {
+    console.log('inside getStationsNextArrival');
     var nextArrival = {};
     $.get('http://localhost:3000/api/StopPoint/' + stationId + '/Arrivals/' + destinationId).done(function (response) {
+      console.log('tfl response for next arrival', response);
       nextArrival = response;
       return callback(nextArrival);
     });
@@ -205,22 +211,15 @@ function Map() {
     var count = 0;
     tubeMap.originIndex += 1;
     tubeMap.destinationIndex += 1;
-    //can delete the below once delay is working
-    //and replace with countIncriment logic
-    var numberOfIntervals = duration / tubeMap.animationRefreshRate;
-    var distancePercentagePerInterval = 100 / numberOfIntervals;
     var intervalId = function intervalId() {
-      //const countIncriment = tubeMap.getCountIncriment(duration, tubeMap.animationRefreshRate);
+      var countIncriment = tubeMap.getCountIncriment(duration, tubeMap.animationRefreshRate);
       var interval = setInterval(function () {
-        // count += countIncriment;
-        count = (count + 1) % 200;
-        // console.log('polyline', polyline);
+        count += countIncriment;
         if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
           tubeMap.removeOldSectionInitNew(polyline, interval);
           return;
         }
-        // polyline.icons[0].offset = (count) + '%';
-        polyline.icons[0].offset = count / 2 + '%';
+        polyline.icons[0].offset = count + '%';
         polyline.set('icons', polyline.icons);
       }, tubeMap.animationRefreshRate);
     };
@@ -239,12 +238,14 @@ function Map() {
     polyline.setMap(null);
     polyline = null;
     clearInterval(interval);
+    console.log('initNextSection()');
     tubeMap.initNextSection();
   };
 
   //receives google route response and give duration of transit step
   //in millisecs
   this.getDuration = function getDuration(response) {
+    console.log('inside getDuration');
     var durationSecs = void 0;
     for (var i = 0; i < response.routes[0].legs[0].steps.length; i++) {
       if (response.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT') {
