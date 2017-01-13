@@ -61,4 +61,8 @@ different skins
 ###Friday 13
 - dev diary
 - wire frame
-- NaptanMetroStation
+- refactored server side code into appropriate routes and controllers
+- refactored tube station object building from client side through to server side
+- difficult as request to tfl for tube stations returns 5000+ stations due to multiple entrances
+- needed to 2 requests inside one another before manipulating the data and saving my own database to get around this
+- set up own api routes to return this information.

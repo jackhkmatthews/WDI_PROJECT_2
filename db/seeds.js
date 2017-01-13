@@ -37,7 +37,8 @@ function tflsStopPointToDb(req, res, stopPoint){
   const doc = new StopPoint({
     'commonName': stopPoint.commonName,
     'lat': stopPoint.lat,
-    'lng': stopPoint.lon
+    'lng': stopPoint.lon,
+    'id': stopPoint.id
   });
   doc.save((err, doc) => {
     if (err) return console.log(err);

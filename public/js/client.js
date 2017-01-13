@@ -28,7 +28,7 @@ function Map() {
   //creating google map object
   //making UI listen
   this.initMap = function initMap() {
-    this.northernLineStationsObject = this.getStationsLatLngObject(this.tubeLineName);
+    this.stopPointsObject = this.getstopPointsObject();
     this.journeyStationsArray = this.getJourneyStationsArray(this.startingLatLng, this.destinationCommonName);
     this.directionsService = new google.maps.DirectionsService();
     this.map = new google.maps.Map(document.getElementById('map'), {
@@ -84,8 +84,8 @@ function Map() {
     console.log('inside initNextSection');
     tubeMap.directionsService = new google.maps.DirectionsService();
     tubeMap.directionsService.route({
-      origin: tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]],
-      destination: tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.destinationIndex]],
+      origin: tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]],
+      destination: tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.destinationIndex]],
       travelMode: 'TRANSIT'
     }, function (response, status) {
       if (status === 'OK') {
@@ -104,14 +104,13 @@ function Map() {
           var duration = tubeMap.getDuration(response);
           console.log('duration from function:', duration);
           console.log('tubeMap.getStationsNextArrival');
-          tubeMap.getStationsNextArrival(tubeMap.northernLineStationsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id, tubeMap.direction, function (nextArrival) {
+          tubeMap.getStationsNextArrival(tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id, tubeMap.direction, function (nextArrival) {
             tubeMap.nextArrival = nextArrival;
             var delay = tubeMap.nextArrival.timeToStation * 1000;
             console.log('delay secs', delay / 1000);
-            tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
+            tubeMap.animateIcon(tubeMap.pathPolyLine, duration / 10, delay / 1000);
           });
           console.log('after getStationsNextArrival');
-          // tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
         })();
       } else {
         window.alert('Directions request failed due to ' + status);
@@ -123,14 +122,15 @@ function Map() {
   // ............utility functions................
   // _____________________________________________
 
-  //returns all StopPoint name and latlng on specified tube line
-  this.getStationsLatLngObject = function getStationsLatLngObject(line) {
+  //returns all StopPoint name and latlng
+  this.getstopPointsObject = function getstopPointsObject() {
     var object = {};
-    $.get('http://localhost:3000/api/lines/' + line).done(function (stations) {
+    $.get('http://localhost:3000/api/stopPoints').done(function (data) {
+      var stations = data.stopPoints;
       $.each(stations, function (index, station) {
         object[station.commonName] = {
-          lat: station.lat,
-          lng: station.lon,
+          lat: parseFloat(station.lat),
+          lng: parseFloat(station.lng),
           id: station.id
         };
       });
