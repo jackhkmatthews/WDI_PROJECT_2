@@ -139,11 +139,11 @@ function Map() {
   };
 
   //returns all names of stations between specified stopPoints
-  this.getJourneyStationsArray = function getJourneyStationsArray(from, to) {
+  this.getJourneyStationsArray = function getJourneyStationsArray(origin, destination) {
     var _this = this;
 
     var array = [];
-    $.get('http://localhost:3000/api/lines/' + from + '/' + to).done(function (route) {
+    $.get('http://localhost:3000/tfl/Journey/JourneyResults/' + origin + '/to/' + destination).done(function (route) {
       _this.tflroute = route;
       array.push(tubeMap.tflroute.journeys[0].legs[1].departurePoint.commonName);
       var stations = tubeMap.tflroute.journeys[0].legs[1].path.stopPoints;
@@ -194,7 +194,7 @@ function Map() {
   this.getStationsNextArrival = function getStationsNextArrival(stationId, destinationId, callback) {
     console.log('inside getStationsNextArrival');
     var nextArrival = {};
-    $.get('http://localhost:3000/api/StopPoint/' + stationId + '/Arrivals/' + destinationId).done(function (response) {
+    $.get('http://localhost:3000/tfl/StopPoint/' + stationId + '/Arrivals/' + destinationId).done(function (response) {
       console.log('tfl response for next arrival', response);
       nextArrival = response;
       return callback(nextArrival);

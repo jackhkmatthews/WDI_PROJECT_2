@@ -30,3 +30,35 @@ some sort of animation smoothing
 ##Side project
 animate one icon along each line with varying speeds
 different skins
+
+##Dev Diary
+###Tuesday 10
+- explored google api
+- direction services
+- icons
+- symbols
+- animation
+- offset
+- manually inputting percentages
+- switching to meters
+###Wednesday 11
+- messed around for ages trying to find best data
+- looked at socketing with hub
+- decided to just plot trains via arrival boards on a map
+- proxy requests server side code
+- spent ages figuring out tfl's api and what it could do 
+- no unique identifier for tubes
+###Thursday 12
+- google doesnt provide the timings available from their own route planner on their api
+- refactored code
+- using callbacks to make sure subsequent api requests were returned before code continued running
+- got timing working
+- got delay working
+- tried using common names instead of lat lng for google direction request but buggy data
+- tried using google departure times but buggy data
+- supplemented google route and duration data with tfl journey planner (stops along the way) and arrival times.
+
+###Friday 13
+- dev diary
+- wire frame
+- NaptanMetroStation
