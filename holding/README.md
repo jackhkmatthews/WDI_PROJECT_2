@@ -66,3 +66,4 @@ different skins
 - difficult as request to tfl for tube stations returns 5000+ stations due to multiple entrances
 - needed to 2 requests inside one another before manipulating the data and saving my own database to get around this
 - set up own api routes to return this information.
+- how to deal with end of line departures? judge end of line, if end of line get next stations arrival info

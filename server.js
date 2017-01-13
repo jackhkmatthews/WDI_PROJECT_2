@@ -4,8 +4,7 @@ const cors     = require('cors');
 const mongoose = require('mongoose');
 const config = require('./config/config');
 mongoose.Promise = global.Promise;
-const rp = require('request-promise');
-const routes   = require('./config/routes');
+const staticRouter   = require('./config/static-routes');
 const tflRouter = require('./config/tfl-routes');
 const apiRouter = require('./config/api-routes');
 
@@ -16,6 +15,6 @@ app.use(cors());
 
 app.use('/tfl', tflRouter);
 app.use('/api', apiRouter);
-app.use('/', routes);
+app.use('/', staticRouter);
 
 app.listen(config.port, console.log(`Server has stated on port: ${config.port}`));

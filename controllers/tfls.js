@@ -13,17 +13,22 @@ function tflsJourneyResults(req, res) {
     });
 }
 
-
 function tflsStopPointArrivals(req, res){
   return rp(`https://api.tfl.gov.uk/StopPoint/${req.params.stationId}/Arrivals?app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
     .then(htmlString => {
       const data = JSON.parse(htmlString);
 
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].towards.includes(req.params.stationCommonName)){
+          return res.status(200).json({message: 'end of line'});
+        }
+      }
+
       const directionTrains = [];
 
-      for (var i = 0; i < data.length; i++) {
-        if (data[i].platformName.includes(req.params.direction)){
-          directionTrains.push(data[i]);
+      for (var k = 0; k < data.length; k++) {
+        if (data[k].platformName.includes(req.params.direction)){
+          directionTrains.push(data[k]);
         }
       }
 
@@ -44,7 +49,6 @@ function tflsStopPointArrivals(req, res){
         }
       }
 
-      console.log(nextArrival);
       return res.status(200).json(nextArrival);
     })
     .catch(err => {
@@ -52,7 +56,25 @@ function tflsStopPointArrivals(req, res){
     });
 }
 
+function tflsEndStopPointDeparture(req, res) {
+  return rp(`https://api.tfl.gov.uk/StopPoint/${req.params.nextStationId}/Arrivals?app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
+    .then(htmlString => {
+      var nextDeparture = {};
+      const arrivals = JSON.parse(htmlString);
+      for (var i = 0; i < arrivals.length; i++){
+        if (!arrivals[i].towards.includes(req.params.stationCommonName)){
+          nextDeparture = arrivals[i];
+        }
+      }
+      return res.status(200).json(nextDeparture);
+    })
+    .catch(err => {
+      return res.status(500).json(err);
+    });
+}
+
 module.exports = {
   journeyResults: tflsJourneyResults,
-  stopPointArrivals: tflsStopPointArrivals
+  stopPointArrivals: tflsStopPointArrivals,
+  endStopPointDeparture: tflsEndStopPointDeparture
 };
