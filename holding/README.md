@@ -75,3 +75,5 @@ different skins
 - how to construct ui? line then origin then destination. required a reconstruction of tubemap db and reconstruction of stopPoints object into an array with tube line and tube id present for each stop point. code to find all vicotria id and names make array then merge togeather into array
 - need to nest ajax in ajax in ajax for journey array, route and init next section to work sequentially
 - fixed sequential animation overrun with if statement
+- tfl data inconsistencies making it very dificult e.g. not including departure stoppoints in route response. lots of legs for things like walking.
+- ISSUE: by requesting for each sectino it is enevitable that some walking will be involed / buggy behavior of polylines.  If one poly line was sued would reduce the risk of bugs.  could use meters to animate icon along line and google estimates of distance between stations? cant be done as meters would include walking and stairs.  google dont provide information for between stations on longer routes.

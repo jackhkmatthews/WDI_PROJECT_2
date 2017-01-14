@@ -43,11 +43,13 @@ function Map() {
   this.calculateAndDisplayRoute = function calculateAndDisplayRoute() {
 
     var originLatLng = $('#origin').val();
+    tubeMap.journeyOrigin = $('option[value="' + originLatLng + '"]:first').text();
     var destinationLatLng = $('#destination').val();
 
     this.getJourneyStationsArray(originLatLng, destinationLatLng, this.googleJourneyRequest);
   };
 
+  //make a request to google for the whole journey
   this.googleJourneyRequest = function () {
     tubeMap.directionsService.route({
       origin: document.getElementById('origin').value,
@@ -55,6 +57,7 @@ function Map() {
       travelMode: 'TRANSIT'
     }, function (response, status) {
       if (status === 'OK') {
+        console.log(response);
         tubeMap.journeyCoordinates = tubeMap.getPolylinePath(response);
         tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.journeyCoordinates, false, '#000', 0.8, 3, null, tubeMap.map);
         tubeMap.pathPolyLine.setMap(tubeMap.map);
@@ -77,7 +80,6 @@ function Map() {
   //animate icon on current section polyline with correct
   //duration and delay from requests to google and tfl
   this.initNextSection = function initNextSection() {
-    console.log('origin ' + tubeMap.stopPointsObject);
     tubeMap.directionsService = new google.maps.DirectionsService();
     tubeMap.directionsService.route({
       origin: tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]],
@@ -86,7 +88,6 @@ function Map() {
     }, function (response, status) {
       if (status === 'OK') {
         (function () {
-          console.log('google response for next section', response);
           tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
           tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
             icon: {
@@ -98,20 +99,15 @@ function Map() {
           }], tubeMap.map);
           tubeMap.pathPolyLine.setMap(tubeMap.map);
           var duration = tubeMap.getDuration(response);
-          console.log('duration from function:', duration);
-          console.log('tubeMap.getStationsNextArrival');
           var stationId = tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id;
           var stationCommonName = tubeMap.journeyStationsArray[tubeMap.originIndex].split(' ')[0];
-          console.log('station name', stationCommonName);
           var nextStationCommonName = tubeMap.journeyStationsArray[tubeMap.originIndex + 1].split(' ')[0];
           var callback = function callback(nextArrival) {
             tubeMap.nextArrival = nextArrival;
             var delay = tubeMap.nextArrival.timeToStation * 1000;
-            console.log('delay secs', delay / 1000);
             tubeMap.animateIcon(tubeMap.pathPolyLine, duration / 200, delay / 200);
           };
           tubeMap.getStationsNextArrival(stationId, stationCommonName, tubeMap.direction, nextStationCommonName, callback);
-          console.log('after getStationsNextArrival');
           // tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
         })();
       } else {
@@ -142,16 +138,23 @@ function Map() {
 
   //returns all names of stations between specified stopPoints
   this.getJourneyStationsArray = function getJourneyStationsArray(origin, destination, callback) {
-    var _this = this;
-
     var array = [];
-    console.log(origin, destination);
     $.get('http://localhost:3000/tfl/Journey/JourneyResults/' + origin + '/to/' + destination).done(function (route) {
-      _this.tflroute = route;
-      var stations = tubeMap.tflroute.journeys[0].legs[1].path.stopPoints;
-      $.each(stations, function (index, station) {
-        array.push(station.name);
+      var legs = route.journeys[0].legs;
+      var stopPoints = legs[0].path.stopPoints;
+      // let departurePoint = legs[0].departurePoint.commonName;
+      $.each(legs, function (index, leg) {
+        if (leg.path.stopPoints.length > stopPoints.length) {
+          stopPoints = leg.path.stopPoints;
+          // departurePoint = leg.departurePoint.commonName;
+        }
       });
+      $.each(stopPoints, function (index, stopPoint) {
+        array.push(stopPoint.name);
+      });
+      if (array[0] !== tubeMap.journeyOrigin) {
+        array.unshift(tubeMap.journeyOrigin);
+      }
       tubeMap.journeyStationsArray = array;
       return callback();
     });
@@ -198,20 +201,17 @@ function Map() {
   //construct next arrival equivalent
   //return next arrival equivalent
   this.getStationsNextArrival = function getStationsNextArrival(stationId, stationCommonName, direction, nextStationCommonName, callback) {
-    var _this2 = this;
+    var _this = this;
 
-    console.log('inside getStationsNextArrival');
     var nextArrival = {};
     $.get('http://localhost:3000/tfl/StopPoint/' + stationId + '/Arrivals/' + stationCommonName + '/' + direction + '/' + nextStationCommonName).done(function (response) {
-      console.log('tfl response for next arrival', response);
       if (response.message === 'end of line') {
         var nextStationId = tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex + 1]].id;
         var _callback = tubeMap.getEndStationsNextDepartureCallback;
         tubeMap.getEndStationsNextDeparture(stationCommonName, nextStationId, _callback);
       } else if (response.message === 'no trains in right direction') {
-        console.log('tfl response for next arrival', response);
         setTimeout(function () {
-          return _this2.getStationsNextArrival(stationId, stationCommonName, direction, nextStationCommonName, callback);
+          return _this.getStationsNextArrival(stationId, stationCommonName, direction, nextStationCommonName, callback);
         }, 5000);
       } else {
         nextArrival = response;
@@ -223,19 +223,16 @@ function Map() {
   //returns the train arrivng soonest to specified stopPoint
   //in specified direction
   this.getEndStationsNextDeparture = function getEndStationsNextDeparture(stationCommonName, nextStationId, callback) {
-    var _this3 = this;
+    var _this2 = this;
 
-    console.log('get end station stuff');
     var endStationsNextDeparture = {};
     $.get('http://localhost:3000/tfl/endStopPoint/' + nextStationId + '/Arrivals/' + stationCommonName).done(function (response) {
       if (!response.timeToStation) {
         console.log('response is an empty object: ' + response);
         setTimeout(function () {
-          return _this3.getEndStationsNextDeparture(stationCommonName, nextStationId, callback);
+          return _this2.getEndStationsNextDeparture(stationCommonName, nextStationId, callback);
         }, 5000);
       } else {
-        console.log(!response.timeToStation);
-        console.log(response);
         endStationsNextDeparture = response;
         return callback(endStationsNextDeparture);
       }
@@ -267,7 +264,7 @@ function Map() {
         if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
           tubeMap.removeOldSection(polyline, interval);
           tubeMap.removeOldSection(tubeMap.pathPolyLine);
-          if (tubeMap.journeyStationsArray.length === tubeMap.destinationIndex + 1) {
+          if (tubeMap.journeyStationsArray.length === tubeMap.destinationIndex) {
             return console.log('finished journey');
           }
           tubeMap.initNextSection();
@@ -297,7 +294,6 @@ function Map() {
   //receives google route response and give duration of transit step
   //in millisecs
   this.getDuration = function getDuration(response) {
-    console.log('inside getDuration');
     var durationSecs = void 0;
     for (var i = 0; i < response.routes[0].legs[0].steps.length; i++) {
       if (response.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT') {
