@@ -7,8 +7,7 @@ function tflsJourneyResults(req, res) {
       return res.status(200).json(data);
     })
     .catch(err => {
-      res.redirect(`/api//Journey/JourneyResults/${req.params.origin}/to/${req.params.destination}`);
-      console.log('redirected to try again');
+      console.log(err);
       return res.status(500).json(err);
     });
 }

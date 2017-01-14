@@ -11,11 +11,8 @@ function Map() {
   this.originIndex = 0;
   this.destinationIndex = 1;
   this.direction = 'Southbound';
-  this.tubeLineName = 'northern';
-  this.startingLatLng = '51.61366277638, -0.27510069015';
-  this.destinationCommonName = 'Morden Underground Station';
-  this.mapCenter = { lat: 51.613674, lng: -0.274868 };
-  this.mapZoom = 14;
+  this.mapCenter = { lat: 51.513568, lng: -0.126688 };
+  this.mapZoom = 11;
   this.animationRefreshRate = 20;
 
   // _____________________________________________
@@ -34,15 +31,8 @@ function Map() {
       zoom: this.mapZoom,
       center: this.mapCenter
     });
-    $('.submit').on('click', this.onChangeHandler.bind(this));
+    $('.submit').on('click', this.calculateAndDisplayRoute.bind(this));
   },
-
-  //on UI change
-  // calculate and display joruney route and trigger
-  //sequential setDirections and animations
-  this.onChangeHandler = function onChangeHandler() {
-    this.calculateAndDisplayRoute();
-  };
 
   //use google direction service to request route
   //if request is successful then get entire journey coordinates
@@ -155,9 +145,9 @@ function Map() {
     var _this = this;
 
     var array = [];
+    console.log(origin, destination);
     $.get('http://localhost:3000/tfl/Journey/JourneyResults/' + origin + '/to/' + destination).done(function (route) {
       _this.tflroute = route;
-      array.push(tubeMap.tflroute.journeys[0].legs[1].departurePoint.commonName);
       var stations = tubeMap.tflroute.journeys[0].legs[1].path.stopPoints;
       $.each(stations, function (index, station) {
         array.push(station.name);
@@ -275,7 +265,12 @@ function Map() {
       var interval = setInterval(function () {
         count += countIncriment;
         if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
-          tubeMap.removeOldSectionInitNew(polyline, interval);
+          tubeMap.removeOldSection(polyline, interval);
+          tubeMap.removeOldSection(tubeMap.pathPolyLine);
+          if (tubeMap.journeyStationsArray.length === tubeMap.destinationIndex + 1) {
+            return console.log('finished journey');
+          }
+          tubeMap.initNextSection();
           return;
         }
         polyline.icons[0].offset = count + '%';
@@ -293,12 +288,10 @@ function Map() {
   };
 
   //removes a finished section polyline and initialises the next
-  this.removeOldSectionInitNew = function removeOldSectionInitNew(polyline, interval) {
+  this.removeOldSection = function removeOldSection(polyline, interval) {
     polyline.setMap(null);
     polyline = null;
-    clearInterval(interval);
-    console.log('initNextSection()');
-    tubeMap.initNextSection();
+    if (interval) clearInterval(interval);
   };
 
   //receives google route response and give duration of transit step
