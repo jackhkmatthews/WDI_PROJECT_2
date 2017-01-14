@@ -25,7 +25,7 @@ function tflsLineToStopPoints(req, res, line){
   .then(htmlString => {
     const stopPoints = JSON.parse(htmlString);
     return stopPoints.forEach(function(stopPoint) {
-      return tflsStopPointToDb(req, res, stopPoint);
+      return tflsStopPointToDb(req, res, stopPoint, line.name, line.id);
     });
   })
   .catch(err => {
@@ -33,15 +33,17 @@ function tflsLineToStopPoints(req, res, line){
   });
 }
 
-function tflsStopPointToDb(req, res, stopPoint){
+function tflsStopPointToDb(req, res, stopPoint, lineName, lineId){
   const doc = new StopPoint({
     'commonName': stopPoint.commonName,
     'lat': stopPoint.lat,
     'lng': stopPoint.lon,
-    'id': stopPoint.id
+    'id': stopPoint.id,
+    'lineName': lineName,
+    'lineId': lineId
   });
   doc.save((err, doc) => {
-    if (err) return console.log(err);
+    // if (err) return console.log(err);
     return console.log(`${doc} saved!`);
   });
 }

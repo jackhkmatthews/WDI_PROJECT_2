@@ -66,4 +66,10 @@ different skins
 - difficult as request to tfl for tube stations returns 5000+ stations due to multiple entrances
 - needed to 2 requests inside one another before manipulating the data and saving my own database to get around this
 - set up own api routes to return this information.
-- how to deal with end of line departures? judge end of line, if end of line get next stations arrival info
+- how to deal with end of line departures? judge end of line, if end of line get next stations arrival info.
+
+###Satruday 14
+
+- how to deal with bad responses from off? if function on property of response, if response isnt whats expected then return set time out of a repeat of the function.  see end of line departure.
+- how to deal with no responses mid way? same as above, if response is 'no trains in right direction' then wait 5 secs and make another request.
+- how to construct ui? line then origin then destination. required a reconstruction of tubemap db and reconstruction of stopPoints object into an array with tube line and tube id present for each stop point.

@@ -109,7 +109,7 @@ function Map(){
           tubeMap.nextArrival = nextArrival;
           const delay = tubeMap.nextArrival.timeToStation*1000;
           console.log('delay secs', delay/1000);
-          tubeMap.animateIcon(tubeMap.pathPolyLine, duration/20, delay/1000);
+          tubeMap.animateIcon(tubeMap.pathPolyLine, duration/200, delay/200);
         };
         tubeMap.getStationsNextArrival(stationId, stationCommonName, tubeMap.direction, nextStationCommonName, callback);
         console.log('after getStationsNextArrival');
@@ -193,6 +193,9 @@ function Map(){
 
   //returns the train arrivng soonest to specified stopPoint
   //in specified direction
+  // if end of line send new request
+  //construct next arrival equivalent
+  //return next arrival equivalent
   this.getStationsNextArrival = function getStationsNextArrival(stationId, stationCommonName, direction, nextStationCommonName, callback){
     console.log('inside getStationsNextArrival');
     let nextArrival = {};
@@ -200,12 +203,14 @@ function Map(){
       .done(response => {
         console.log('tfl response for next arrival', response);
         if (response.message === 'end of line') {
-          //send new request
-          //construct next arrival equivalent
-          //return next arrival equivalent
           const nextStationId = tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex + 1]].id;
           const callback = tubeMap.getEndStationsNextDepartureCallback;
           tubeMap.getEndStationsNextDeparture(stationCommonName, nextStationId, callback);
+        } else if (response.message === 'no trains in right direction'){
+          console.log('tfl response for next arrival', response);
+          setTimeout(() => {
+            return this.getStationsNextArrival(stationId, stationCommonName, direction, nextStationCommonName, callback);
+          }, 5000);
         } else {
           nextArrival = response;
           return callback(nextArrival);
@@ -220,17 +225,27 @@ function Map(){
     let endStationsNextDeparture = {};
     $.get(`http://localhost:3000/tfl/endStopPoint/${nextStationId}/Arrivals/${stationCommonName}`)
       .done(response => {
-        console.log('tfl response for end station next departure', response);
-        endStationsNextDeparture = response;
-        return callback(endStationsNextDeparture);
+        if(!response.timeToStation) {
+          console.log(`response is an empty object: ${response}`);
+          setTimeout(() => {
+            return this.getEndStationsNextDeparture(stationCommonName, nextStationId, callback);
+          }, 5000);
+        } else {
+          console.log(!response.timeToStation);
+          console.log(response);
+          endStationsNextDeparture = response;
+          return callback(endStationsNextDeparture);
+        }
       });
   };
 
+  //to be exicuted on return of departure info
+  //triggers animation
   this.getEndStationsNextDepartureCallback = function(endStationsNextDeparture){
     tubeMap.endStationsNextDeparture = endStationsNextDeparture;
     const duration = tubeMap.endStationsNextDeparture.timeToStation*1000;
     const delay = 1;
-    tubeMap.animateIcon(tubeMap.pathPolyLine, duration/20, delay/1000);
+    tubeMap.animateIcon(tubeMap.pathPolyLine, duration/200, delay/200);
   };
 
   //receives polyline and animation config options
