@@ -27,14 +27,11 @@ function Map(){
   //making UI listen
   this.initMap = function initMap() {
     this.stopPointsObject = this.getstopPointsObject();
-    this.journeyStationsArray = this.getJourneyStationsArray(this.startingLatLng, this.destinationCommonName);
     this.directionsService = new google.maps.DirectionsService;
     this.map = new google.maps.Map(document.getElementById('map'), {
       zoom: this.mapZoom,
       center: this.mapCenter
     });
-    // document.getElementById('origin').addEventListener('change', this.onChangeHandler.bind(this));
-    // document.getElementById('destination').addEventListener('change', this.onChangeHandler.bind(this));
     $('.submit').on('click', this.onChangeHandler.bind(this));
   },
 
@@ -42,7 +39,7 @@ function Map(){
   // calculate and display joruney route and trigger
   //sequential setDirections and animations
   this.onChangeHandler = function onChangeHandler(){
-    this.calculateAndDisplayRoute(this.directionsService, this.initNextSection);
+    this.calculateAndDisplayRoute();
   };
 
   //use google direction service to request route
@@ -51,8 +48,17 @@ function Map(){
   //attach journey polyline to map
   //initialise next/first section of journey
   //which will hold animated icon
-  this.calculateAndDisplayRoute = function calculateAndDisplayRoute(directionsService, callback) {
-    directionsService.route({
+  this.calculateAndDisplayRoute = function calculateAndDisplayRoute() {
+
+    const originLatLng = $('#origin').val();
+    const destinationLatLng = $('#destination').val();
+
+    this.getJourneyStationsArray(originLatLng, destinationLatLng, this.googleJourneyRequest);
+
+  };
+
+  this.googleJourneyRequest = function(){
+    tubeMap.directionsService.route({
       origin: document.getElementById('origin').value,
       destination: document.getElementById('destination').value,
       travelMode: 'TRANSIT'
@@ -62,7 +68,7 @@ function Map(){
         tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.journeyCoordinates, false, '#000', 0.8, 3, null, tubeMap.map);
         tubeMap.pathPolyLine.setMap(tubeMap.map);
       }
-      callback();
+      tubeMap.initNextSection();
     });
   };
 
@@ -80,7 +86,7 @@ function Map(){
   //animate icon on current section polyline with correct
   //duration and delay from requests to google and tfl
   this.initNextSection = function initNextSection(){
-    console.log('inside initNextSection');
+    console.log(`origin ${tubeMap.stopPointsObject}`);
     tubeMap.directionsService = new google.maps.DirectionsService;
     tubeMap.directionsService.route({
       origin: tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]],
@@ -143,7 +149,7 @@ function Map(){
   };
 
   //returns all names of stations between specified stopPoints
-  this.getJourneyStationsArray = function getJourneyStationsArray(origin, destination){
+  this.getJourneyStationsArray = function getJourneyStationsArray(origin, destination, callback){
     const array = [];
     $.get(`http://localhost:3000/tfl/Journey/JourneyResults/${origin}/to/${destination}`)
       .done(route => {
@@ -153,8 +159,9 @@ function Map(){
         $.each(stations, (index, station) => {
           array.push(station.name);
         });
+        tubeMap.journeyStationsArray = array;
+        return callback();
       });
-    return array;
   };
 
   //receives routeResponse from google and returns

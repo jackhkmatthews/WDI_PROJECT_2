@@ -72,4 +72,5 @@ different skins
 
 - how to deal with bad responses from off? if function on property of response, if response isnt whats expected then return set time out of a repeat of the function.  see end of line departure.
 - how to deal with no responses mid way? same as above, if response is 'no trains in right direction' then wait 5 secs and make another request.
-- how to construct ui? line then origin then destination. required a reconstruction of tubemap db and reconstruction of stopPoints object into an array with tube line and tube id present for each stop point.
+- how to construct ui? line then origin then destination. required a reconstruction of tubemap db and reconstruction of stopPoints object into an array with tube line and tube id present for each stop point. code to find all vicotria id and names make array then merge togeather into array
+- need to nest ajax in ajax in ajax for journey array, route and init next section to work sequentially
