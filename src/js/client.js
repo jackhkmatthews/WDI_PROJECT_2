@@ -33,8 +33,9 @@ function Map(){
       zoom: this.mapZoom,
       center: this.mapCenter
     });
-    document.getElementById('start').addEventListener('change', this.onChangeHandler.bind(this));
-    document.getElementById('end').addEventListener('change', this.onChangeHandler.bind(this));
+    // document.getElementById('origin').addEventListener('change', this.onChangeHandler.bind(this));
+    // document.getElementById('destination').addEventListener('change', this.onChangeHandler.bind(this));
+    $('.submit').on('click', this.onChangeHandler.bind(this));
   },
 
   //on UI change
@@ -52,8 +53,8 @@ function Map(){
   //which will hold animated icon
   this.calculateAndDisplayRoute = function calculateAndDisplayRoute(directionsService, callback) {
     directionsService.route({
-      origin: document.getElementById('start').value,
-      destination: this.destinationCommonName,
+      origin: document.getElementById('origin').value,
+      destination: document.getElementById('destination').value,
       travelMode: 'TRANSIT'
     }, function(response, status){
       if (status === 'OK') {

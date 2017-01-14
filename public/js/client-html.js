@@ -27,14 +27,23 @@ html.getstopPointsArray = function getstopPointsArray(callback) {
 
 html.init = function (stopPointsArray) {
   html.stopPointsArray = stopPointsArray;
-  $('body').append(html.returnUi);
   html.getLinesArray();
-  html.populateUi();
+  html.populateLineSelect();
 };
 
-html.returnUi = function () {
-  return '<div id="floating-panel">\n  <b>Line: </b>\n  <select id="line">\n  </select>\n  <b>Start: </b>\n  <select id="origin"></select>\n  <b>End: </b>\n  <select id="destination"></select>\n  <button>Submit</button>\n  </div>\n  <div id="map"></div>';
-};
+// html.returnUi = function(){
+//   return `<div id="floating-panel">
+//   <b>Line: </b>
+//   <select id="line">
+//   </select>
+//   <b>Start: </b>
+//   <select id="origin"></select>
+//   <b>End: </b>
+//   <select id="destination"></select>
+//   <button>Submit</button>
+//   </div>
+//   <div id="map"></div>`;
+// };
 
 html.getLinesArray = function () {
   var lineIds = [];
@@ -56,9 +65,30 @@ html.getLinesArray = function () {
   }
 };
 
-html.populateUi = function () {
+html.populateLineSelect = function () {
   $(html.linesArray).each(function (index, line) {
     $('#line').append('\n      <option value="' + line.lineId + '">' + line.lineName + '</option>\n      ');
+  });
+  $('#line').on('change', html.populateStopPointSelects);
+};
+
+html.populateStopPointSelects = function (e) {
+  var lineId = $(e.target).val();
+  console.log('value:', lineId);
+  var stopPoints = [];
+  $(html.stopPointsArray).each(function (index, stopPoint) {
+    if (stopPoint.lineId === lineId) {
+      stopPoints.push(stopPoint);
+    }
+  });
+  html.populateStopPointSelect(stopPoints, '#origin');
+  html.populateStopPointSelect(stopPoints, '#destination');
+};
+
+html.populateStopPointSelect = function (stopPoints, jquerySelector) {
+  $(jquerySelector).html('');
+  $(stopPoints).each(function (index, stopPoint) {
+    $(jquerySelector).append('\n      <option value="' + stopPoint.lat + ', ' + stopPoint.lng + '">' + stopPoint.commonName + '</option>\n      ');
   });
 };
 

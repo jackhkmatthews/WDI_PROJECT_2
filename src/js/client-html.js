@@ -26,24 +26,23 @@ html.getstopPointsArray = function getstopPointsArray(callback){
 
 html.init = function(stopPointsArray){
   html.stopPointsArray = stopPointsArray;
-  $('body').append(html.returnUi);
   html.getLinesArray();
-  html.populateUi();
+  html.populateLineSelect();
 };
 
-html.returnUi = function(){
-  return `<div id="floating-panel">
-  <b>Line: </b>
-  <select id="line">
-  </select>
-  <b>Start: </b>
-  <select id="origin"></select>
-  <b>End: </b>
-  <select id="destination"></select>
-  <button>Submit</button>
-  </div>
-  <div id="map"></div>`;
-};
+// html.returnUi = function(){
+//   return `<div id="floating-panel">
+//   <b>Line: </b>
+//   <select id="line">
+//   </select>
+//   <b>Start: </b>
+//   <select id="origin"></select>
+//   <b>End: </b>
+//   <select id="destination"></select>
+//   <button>Submit</button>
+//   </div>
+//   <div id="map"></div>`;
+// };
 
 html.getLinesArray = function(){
   const lineIds =[];
@@ -65,10 +64,33 @@ html.getLinesArray = function(){
   }
 };
 
-html.populateUi = function(){
+html.populateLineSelect = function(){
   $(html.linesArray).each((index, line) => {
     $('#line').append(`
       <option value="${line.lineId}">${line.lineName}</option>
+      `);
+  });
+  $('#line').on('change', html.populateStopPointSelects);
+};
+
+html.populateStopPointSelects = function(e){
+  const lineId = $(e.target).val();
+  console.log('value:', lineId);
+  const stopPoints = [];
+  $(html.stopPointsArray).each((index, stopPoint) => {
+    if(stopPoint.lineId === lineId){
+      stopPoints.push(stopPoint);
+    }
+  });
+  html.populateStopPointSelect(stopPoints, '#origin');
+  html.populateStopPointSelect(stopPoints, '#destination');
+};
+
+html.populateStopPointSelect = function(stopPoints, jquerySelector){
+  $(jquerySelector).html('');
+  $(stopPoints).each((index, stopPoint) => {
+    $(jquerySelector).append(`
+      <option value="${stopPoint.lat}, ${stopPoint.lng}">${stopPoint.commonName}</option>
       `);
   });
 };
