@@ -1,3 +1,6 @@
+const tubeLineColors = ['#95CDBA', '#0098D4', '#A0A5A9', '#00782A', '#9B0056', '#000000', '#003688', '#E32017', '#F3A9BB', '#B36305'
+];
+
 const html = html || {};
 
 html.getData = function() {
@@ -30,20 +33,6 @@ html.init = function(stopPointsArray){
   html.populateLineSelect();
 };
 
-// html.returnUi = function(){
-//   return `<div id="floating-panel">
-//   <b>Line: </b>
-//   <select id="line">
-//   </select>
-//   <b>Start: </b>
-//   <select id="origin"></select>
-//   <b>End: </b>
-//   <select id="destination"></select>
-//   <button>Submit</button>
-//   </div>
-//   <div id="map"></div>`;
-// };
-
 html.getLinesArray = function(){
   const lineIds =[];
   const lineNames = [];
@@ -59,7 +48,8 @@ html.getLinesArray = function(){
   for (var i = 0; i < lineIds.length; i++) {
     html.linesArray.push({
       lineId: lineIds[i],
-      lineName: lineNames[i]
+      lineName: lineNames[i],
+      lineColor: tubeLineColors[i]
     });
   }
 };
@@ -67,7 +57,7 @@ html.getLinesArray = function(){
 html.populateLineSelect = function(){
   $(html.linesArray).each((index, line) => {
     $('#line').append(`
-      <option value="${line.lineId}">${line.lineName}</option>
+      <option value="${line.lineId}" data-color="${line.lineColor}">${line.lineName}</option>
       `);
   });
   $('#line').on('change', html.populateStopPointSelects);

@@ -19,6 +19,8 @@ const tubeMap = new Map();
 function Train() {
 
   this.line;
+  this.lineColor;
+  this.iconColor;
   this.origin;
   this.destination;
   this.originIndex = 0;
@@ -49,11 +51,8 @@ function Train() {
       const interval = setInterval(function() {
         count += countIncriment;
         if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
-          self.removeOldSection(self.pathPolyLine);
-          if(self.journeyStationsArray.length === self.destinationIndex){
-            return console.log('finished journey');
-          }
-          return;
+          self.removeOldSection(self.pathPolyLine, interval);
+          return console.log('finished journey');
         }
         polyline.icons[0].offset = (count) + '%';
         polyline.set('icons', polyline.icons);
@@ -108,11 +107,11 @@ function Train() {
   this.departTrain = function(response){
     console.log('setpolyline this', this);
     this.journeyCoordinates = this.getPolylinePath(response);
-    this.pathPolyLine = this.makePolyline(this.journeyCoordinates, false, '#000', 0.8, 3, [{
+    this.pathPolyLine = this.makePolyline(this.journeyCoordinates, false, this.lineColor, 1, 4, [{
       icon: {
-        path: google.maps.SymbolPath.CIRCLE,
+        path: 0,
         scale: 8,
-        strokeColor: '#393'
+        strokeColor: this.lineColor
       },
       offset: '0%'
     }], this.map);
@@ -144,6 +143,7 @@ function Train() {
 
   this.init = function(){
     this.line = $('#line').val();
+    this.lineColor = $(`option[value=${this.line}]`).attr('data-color');
     this.origin = $('#origin').val();
     this.destination = $('#destination').val();
     tubeApp.trainCounter += 1;
