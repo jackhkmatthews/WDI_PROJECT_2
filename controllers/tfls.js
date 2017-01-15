@@ -13,10 +13,12 @@ function tflsJourneyResults(req, res) {
 }
 
 function tflsStopPointArrivals(req, res){
+  console.log('inside tflsStopPointArrivals');
   return rp(`https://api.tfl.gov.uk/StopPoint/${req.params.stationId}/Arrivals?app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
     .then(htmlString => {
       const data = JSON.parse(htmlString);
       //check if end of line
+      console.log('data from tfl:', data);
       for (var i = 0; i < data.length; i++) {
         if (data[i].towards.includes(req.params.stationCommonName)){
           return res.status(200).json({message: 'end of line'});

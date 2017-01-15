@@ -77,3 +77,6 @@ different skins
 - fixed sequential animation overrun with if statement
 - tfl data inconsistencies making it very dificult e.g. not including departure stoppoints in route response. lots of legs for things like walking.
 - ISSUE: by requesting for each sectino it is enevitable that some walking will be involed / buggy behavior of polylines.  If one poly line was sued would reduce the risk of bugs.  could use meters to animate icon along line and google estimates of distance between stations? cant be done as meters would include walking and stairs.  google dont provide information for between stations on longer routes.
+
+###Sunday
+- splitting app into App, Map and Train constructor functions. Hopefully will allow new trains to be constructed on user input.

@@ -56,12 +56,23 @@ function Map(){
       travelMode: 'TRANSIT'
     }, function(response, status){
       if (status === 'OK') {
-        console.log(response);
+        console.log('google whole route response: ', response);
         tubeMap.journeyCoordinates = tubeMap.getPolylinePath(response);
-        tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.journeyCoordinates, false, '#000', 0.8, 3, null, tubeMap.map);
+        tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.journeyCoordinates, false, '#000', 0.8, 3, [{
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            strokeColor: '#393'
+          },
+          offset: '0%'
+        }], tubeMap.map);
         tubeMap.pathPolyLine.setMap(tubeMap.map);
       }
-      tubeMap.initNextSection();
+      // tubeMap.initNextSection();
+//..................the below to be commented out once tfl back..............//
+      const duration = tubeMap.getDuration(response);
+      const delay = 0;
+      tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
     });
   };
 
@@ -79,6 +90,7 @@ function Map(){
   //animate icon on current section polyline with correct
   //duration and delay from requests to google and tfl
   this.initNextSection = function initNextSection(){
+    console.log('inside initNextSection');
     tubeMap.directionsService = new google.maps.DirectionsService;
     tubeMap.directionsService.route({
       origin: tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]],
@@ -86,6 +98,7 @@ function Map(){
       travelMode: 'TRANSIT'
     }, function(response, status){
       if (status === 'OK') {
+        console.log('google next section response: ', response);
         tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
         tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
           icon: {
@@ -200,9 +213,11 @@ function Map(){
   //construct next arrival equivalent
   //return next arrival equivalent
   this.getStationsNextArrival = function getStationsNextArrival(stationId, stationCommonName, direction, nextStationCommonName, callback){
+    console.log('inside getStationsNextArrival function', stationId);
     let nextArrival = {};
     $.get(`http://localhost:3000/tfl/StopPoint/${stationId}/Arrivals/${stationCommonName}/${direction}/${nextStationCommonName}`)
       .done(response => {
+        console.log('tfl next arrival response:', response);
         if (response.message === 'end of line') {
           const nextStationId = tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex + 1]].id;
           const callback = tubeMap.getEndStationsNextDepartureCallback;
@@ -291,6 +306,7 @@ function Map(){
   //receives google route response and give duration of transit step
   //in millisecs
   this.getDuration = function getDuration(response){
+    console.log('insed getDuration function');
     let durationSecs;
     for (var i = 0; i < response.routes[0].legs[0].steps.length; i++) {
       if (response.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT'){
