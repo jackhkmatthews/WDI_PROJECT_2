@@ -20,7 +20,63 @@ var tubeMap = new Map();
 
 function Train() {
 
+  this.line;
+  this.origin;
+  this.destination;
+  this.originIndex = 0;
+  this.destinationIndex = 0;
+  this.animationRefreshRate = 20;
+
+  this.removeOldSection = function (polyline, interval) {
+    polyline.setMap(null);
+    polyline = null;
+    if (interval) clearInterval(interval);
+  };
+
+  this.getCountIncriment = function getCountIncriment(duration, animationRefreshRate) {
+    var numberOfIntervals = duration / animationRefreshRate;
+    var distancePercentagePerInterval = 100 / numberOfIntervals;
+    return distancePercentagePerInterval;
+  };
+
+  this.animateIcon = function (polyline, duration, delay) {
+    var self = this;
+    console.log('animateIcon this', this);
+    var count = 0;
+    this.originIndex += 1;
+    this.destinationIndex += 1;
+    var intervalId = function intervalId() {
+      console.log('intervalId this', self);
+      var countIncriment = self.getCountIncriment(duration, self.animationRefreshRate);
+      var interval = setInterval(function () {
+        count += countIncriment;
+        if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
+          self.removeOldSection(self.pathPolyLine);
+          if (self.journeyStationsArray.length === self.destinationIndex) {
+            return console.log('finished journey');
+          }
+          return;
+        }
+        polyline.icons[0].offset = count + '%';
+        polyline.set('icons', polyline.icons);
+      }, this.animationRefreshRate);
+    };
+    setTimeout(intervalId, delay);
+  };
+
+  this.getDuration = function (response) {
+    console.log('getDuration this', this);
+    var durationSecs = void 0;
+    for (var i = 0; i < response.routes[0].legs[0].steps.length; i++) {
+      if (response.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT') {
+        durationSecs = response.routes[0].legs[0].steps[i].duration.value;
+      }
+    }
+    return durationSecs * 1000;
+  };
+
   this.makePolyline = function makePolyline(path, geodesic, strokeColor, strokeOpacity, strokeWeight, icons, map) {
+    console.log('makePolyline this', this);
     var polyline = new google.maps.Polyline({
       path: path,
       geodesic: geodesic,
@@ -34,6 +90,7 @@ function Train() {
   };
 
   this.getPolylinePath = function (routeResponse) {
+    console.log('getPolylinePath this', this);
     for (var i = 0; i < routeResponse.routes[0].legs[0].steps.length; i++) {
       if (routeResponse.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT') {
         var pathLatLngs = routeResponse.routes[0].legs[0].steps[i].lat_lngs;
@@ -50,28 +107,37 @@ function Train() {
     return pathCoordinates;
   };
 
-  this.googleJourneyRequest = function () {
-    console.log('joutney request this:', this);
-    tubeMap.directionsService.route({
+  this.departTrain = function (response) {
+    console.log('setpolyline this', this);
+    this.journeyCoordinates = this.getPolylinePath(response);
+    this.pathPolyLine = this.makePolyline(this.journeyCoordinates, false, '#000', 0.8, 3, [{
+      icon: {
+        path: google.maps.SymbolPath.CIRCLE,
+        scale: 8,
+        strokeColor: '#393'
+      },
+      offset: '0%'
+    }], this.map);
+    this.pathPolyLine.setMap(tubeMap.map);
+    this.duration = this.getDuration(response);
+    this.delay = 0;
+    this.animateIcon.call(this, this.pathPolyLine, this.duration, this.delay);
+  };
+
+  this.googleJourneyRequest = function (callback) {
+    console.log('journey request this:', this);
+    var self = this;
+    self.directionsService.route({
       origin: this.origin,
       destination: this.destination,
       travelMode: 'TRANSIT'
     }, function (response, status) {
-      console.log('journey callback this:', this);
+      console.log('journey callback this:', self);
       if (status === 'OK') {
         console.log('google whole route response: ', response);
-        this.journeyCoordinates = this.getPolylinePath(response);
-        this.pathPolyLine = this.makePolyline(this.journeyCoordinates, false, '#000', 0.8, 3, [{
-          icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8,
-            strokeColor: '#393'
-          },
-          offset: '0%'
-        }], this.map);
-        this.pathPolyLine.setMap(this.map);
+        callback.call(self, response);
       }
-    }).call(this);
+    });
   };
 
   this.random = function () {
@@ -85,20 +151,14 @@ function Train() {
     tubeApp.trainCounter += 1;
     console.log('init this', this);
     this.random.call(this);
-    this.googleJourneyRequest.call(this);
+    this.directionsService = new google.maps.DirectionsService();
+    this.googleJourneyRequest.call(this, this.departTrain);
   }.call(this);
 }
 
 function App() {
   this.stopPointsObject;
   this.trainCounter = 0;
-
-  this.init = function () {
-    this.stopPointsObject = this.getStopPointsObject();
-    tubeMap.init();
-    //make ui listen
-    $('.submit').on('click', this.newTrain.bind(this));
-  };
 
   this.getStopPointsObject = function () {
     var object = {};
@@ -117,6 +177,13 @@ function App() {
 
   this.newTrain = function () {
     this['train' + this.trainCounter] = new Train();
+  };
+
+  this.init = function () {
+    this.stopPointsObject = this.getStopPointsObject();
+    tubeMap.init();
+    //make ui listen
+    $('.submit').on('click', this.newTrain.bind(this));
   };
 }
 
