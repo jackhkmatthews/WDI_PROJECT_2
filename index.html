@@ -18,8 +18,8 @@
       <div id="floating-panel">
         <div class="c-buttons">
           <button id="c-button--slide-left" class="c-button">Add trains</button>
-          <button id="c-button--slide-left-login" class="c-button">Login</button>
-          <button id="c-button--slide-left-register" class="c-button">Register</button>
+          <button id="c-button--slide-left-login" class="c-button loggedOut">Login</button>
+          <button id="c-button--slide-left-register" class="c-button loggedOut">Register</button>
         </div>
       </div>
     <div id="map"></div>
@@ -53,7 +53,7 @@
         <li class="c-menu__item form">
             <form class="login" action="/users/login" method="post">
               <input type="email" name="user[email]" value="you@you.com">
-              <input type="password" name="user[password]" value="Password">
+              <input type="password" name="user[password]" value="password">
               <button type="submit" name="button" class="submit login">Login</button>
             </form>
         </li>

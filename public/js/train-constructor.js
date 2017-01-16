@@ -187,14 +187,16 @@ function App() {
   };
 
   this.loginForm = function (e) {
+    var self = this;
     e.preventDefault();
     var method = $(e.target).attr('method');
     var data = $(e.target).serialize();
     var url = '' + this.serverUrl + $(e.target).attr('action');
-
+    console.log(data);
     this.ajaxRequest(url, method, data, function (data) {
       if (data.user.firstName) {
-        $('#c-menu--slide-left-register .c-menu__items').html('\n          Welcome back ' + data.user.firstName + '!<br>\n          Try not to break it this time!\n          ');
+        $('#c-menu--slide-left-login .c-menu__items').html('\n          Welcome back ' + data.user.firstName + '!<br>\n          Try not to break it this time!\n          ');
+        self.loggedInState();
       } else {
         console.log('something went wrong when logining in user. data returned: ', data);
       }
@@ -235,7 +237,18 @@ function App() {
     return object;
   };
 
+  this.loggedOutState = function () {
+    $('.loggedOut').show();
+    $('.loggedIn').hide();
+  };
+
+  this.loggedInState = function () {
+    $('.loggedOut').hide();
+    $('.loggedIn').show();
+  };
+
   this.init = function () {
+    this.loggedOutState();
     this.stopPointsObject = this.getStopPointsObject();
     tubeMap.init();
     //make ui listen
