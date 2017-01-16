@@ -215,16 +215,19 @@ button.submit:hover {
 }
 
 .tube-logo {
-    height: 323px;
-    width: 323px;
-    position: absolute;
-    top: calc(50vh - 161px);
-    left: -161px;
-    border: 55px solid #dc241f;
-    border-radius: 171px;
-    box-sizing: border-box;
-    /* background: rgba(255, 255, 255, 1.7); */
-    transition: box-shadow, 0.2s;
+  height: 323px;
+  width: 323px;
+  position: absolute;
+  top: calc(50vh - 161px);
+  left: -161px;
+  border: 55px solid #dc241f;
+  border-radius: 171px;
+  box-sizing: border-box;
+  transition: background, 0.3s;
+}
+
+.tube-logo:hover {
+  background-color: white;
 }
 
 .tube-logo h1 {
@@ -242,8 +245,6 @@ button.submit:hover {
     height: 62px;
     transition: box-shadow, 0.2s;
 }
-
-.tube-logo h1:hover {text-decoration: underline;}
 
 button.login {
     width: 49%;
