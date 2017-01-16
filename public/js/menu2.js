@@ -40,14 +40,14 @@ slideLeftBtnRegister.addEventListener('click', function (e) {
   slideLeftRegister.open();
 });
 
-$('#loginBack').on('click', function(e){
+$('#loginBack').on('click', function (e) {
   console.log('clicked');
   e.preventDefault;
   slideLeftLogin.close();
   slideLeft.open();
 });
 
-$('#registerBack').on('click', function(e){
+$('#registerBack').on('click', function (e) {
   console.log('clicked');
   e.preventDefault;
   slideLeftRegister.close();
