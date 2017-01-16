@@ -174,6 +174,64 @@ function Train() {
 function App(){
   this.stopPointsObject;
   this.trainCounter = 0;
+  this.serverUrl = 'http://localhost:3000';
+
+  this.ajaxRequest = function(url, method, data, callback){
+    $.ajax(url, {
+      method,
+      data
+    }).done(data => {
+      callback(data);
+    });
+  };
+
+  this.handelForm = function(form){
+    const method = $(form).attr('method');
+    const data = $(form).serialize();
+    const url = `${this.serverUrl}${$(form).attr('action')}`;
+    const ajaxOptionsArray = [method, data, url];
+    return ajaxOptionsArray;
+  };
+
+  this.loginForm = function(e){
+    e.preventDefault();
+    const method = $(e.target).attr('method');
+    const data = $(e.target).serialize();
+    const url = `${this.serverUrl}${$(e.target).attr('action')}`;
+
+    this.ajaxRequest(url, method, data, data => {
+      if(data.user.firstName) {
+        $('#c-menu--slide-left-register .c-menu__items').html(`
+          Welcome back ${data.user.firstName}!<br>
+          Try not to break it this time!
+          `);
+      } else {
+        console.log('something went wrong when logining in user. data returned: ', data);
+      }
+    });
+  };
+
+  this.registerForm = function(e){
+    e.preventDefault();
+    const method = $(e.target).attr('method');
+    const data = $(e.target).serialize();
+    const url = `${this.serverUrl}${$(e.target).attr('action')}`;
+
+    this.ajaxRequest(url, method, data, data => {
+      if(data.user.firstName) {
+        $('#c-menu--slide-left-register .c-menu__items').html(`
+          Welcome ${data.user.firstName}!<br>
+          OMFG, ${data.user.favouriteLine} is my favourite line to!
+          `);
+      } else {
+        console.log('something went wrong when registering user. data returned: ', data);
+      }
+    });
+  };
+
+  this.newTrain = function(){
+    this['train' + this.trainCounter] = new Train();
+  };
 
   this.getStopPointsObject = function(){
     const object = {};
@@ -191,15 +249,13 @@ function App(){
     return object;
   };
 
-  this.newTrain = function(){
-    this['train' + this.trainCounter] = new Train();
-  };
-
   this.init = function(){
     this.stopPointsObject = this.getStopPointsObject();
     tubeMap.init();
     //make ui listen
-    $('.submit').on('click', this.newTrain.bind(this));
+    $('.submit.train').on('click', this.newTrain.bind(this));
+    $('form.register').on('submit', this.registerForm.bind(this));
+    $('form.login').on('submit', this.loginForm.bind(this));
   };
 }
 

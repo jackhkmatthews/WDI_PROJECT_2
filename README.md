@@ -84,4 +84,8 @@ different skins
 
 ###Monday
 
--
+- css side bar passing colors of train lines
+- mutliple sliders
+- user authentication from scratch 
+- user register, no password (smashed it)
+- real understanding of client side ajax request callbacks.

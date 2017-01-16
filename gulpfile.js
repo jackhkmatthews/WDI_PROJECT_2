@@ -1,8 +1,8 @@
 const gulp        = require('gulp');
 const babel       = require('gulp-babel');
-// const sass        = require('gulp-sass');
+const sass        = require('gulp-sass');
 const nodemon     = require('gulp-nodemon');
-// const cleanCSS 	  = require('gulp-clean-css');
+const cleanCSS 	  = require('gulp-clean-css');
 // const uglify      = require('gulp-uglify');
 const imagemin    = require('gulp-imagemin');
 const browserSync = require('browser-sync').create();
@@ -14,12 +14,12 @@ gulp.task('es6', () => {
   .pipe(gulp.dest('public/js'));
 });
 
-// gulp.task('sass', () => {
-//   return gulp.src('src/scss/**/*.scss')
-//   .pipe(sass().on('error', sass.logError))
-//   .pipe(cleanCSS({ compatibility: 'ie8'}))
-//   .pipe(gulp.dest('public/css'));
-// });
+gulp.task('sass', () => {
+  return gulp.src('src/scss/**/*.scss')
+  .pipe(sass().on('error', sass.logError))
+  .pipe(cleanCSS({ compatibility: 'ie8'}))
+  .pipe(gulp.dest('public/css'));
+});
 
 gulp.task('images', () => {
   return gulp.src('src/images/**/*.{png,jpg,jpeg,gif,ico}')
@@ -38,25 +38,23 @@ gulp.task('fonts', () => {
     .pipe(browserSync.stream());
 });
 
-// gulp.task('serve', ['es6', 'sass'], () => {
-// gulp.task('serve', ['es6'], () => {
-//   browserSync.init({
-//     proxy: 'http://localhost:3000',
-//     files: ['public/**/*.*'],
-//     browser: 'google chrome',
-//     port: 7000,
-//     reloadDelay: 500
-//   });
+gulp.task('serve', ['es6', 'sass'], () => {
+  browserSync.init({
+    proxy: 'http://localhost:3000',
+    files: ['public/**/*.*'],
+    browser: 'google chrome',
+    port: 7000,
+    reloadDelay: 500
+  });
 
-//   return nodemon({ script: 'server.js'})
-//     .on('start', () => browserSync.reload());
-// });
+  return nodemon({ script: 'server.js'})
+    .on('start', () => browserSync.reload());
+});
 
-// gulp.task('default', ['sass', 'es6', 'images', 'fonts', 'serve'], () => {
-gulp.task('default', ['es6', 'images', 'fonts'], () => {
-  // gulp.watch('src/scss/**/*.scss', ['sass']);
+gulp.task('default', ['sass', 'es6', 'images', 'fonts', 'serve'], () => {
+  gulp.watch('src/scss/**/*.scss', ['sass']);
   gulp.watch('src/js/*.js', ['es6']);
   gulp.watch('src/images/**/*.{png,jpg,jpeg,gif,ico}', ['images']);
   gulp.watch('src/fonts/**/*.{eot,svg,ttf,woff,woff2}', ['fonts']);
-  // gulp.watch('**/*.html', browserSync.reload);
+  gulp.watch('**/*.html', browserSync.reload);
 });

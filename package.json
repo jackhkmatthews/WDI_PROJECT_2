@@ -4,6 +4,7 @@
   "description": "second wdi project",
   "main": "gulpfile.js",
   "dependencies": {
+    "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "express": "^4.13.4",
     "mongoose": "^4.4.3",
