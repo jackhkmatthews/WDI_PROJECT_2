@@ -169,6 +169,23 @@ function App() {
   this.trainCounter = 0;
   this.serverUrl = 'http://localhost:3000';
 
+  this.removeToken = function () {
+    window.localStorage.clear();
+  };
+
+  this.getToken = function () {
+    return window.localStorage.getItem('token');
+  };
+
+  this.setToken = function (token) {
+    window.localStorage.setItem('token', token);
+  };
+
+  this.logout = function () {
+    this.loggedOutState();
+    this.removeToken();
+  };
+
   this.ajaxRequest = function (url, method, data, callback) {
     $.ajax(url, {
       method: method,
@@ -196,6 +213,7 @@ function App() {
     this.ajaxRequest(url, method, data, function (data) {
       if (data.user.firstName) {
         $('#c-menu--slide-left-login .c-menu__items').html('\n          Welcome back ' + data.user.firstName + '!<br>\n          Try not to break it this time!\n          ');
+        if (data.token) self.setToken(data.token);
         self.loggedInState();
       } else {
         console.log('something went wrong when logining in user. data returned: ', data);
@@ -204,6 +222,7 @@ function App() {
   };
 
   this.registerForm = function (e) {
+    var self = this;
     e.preventDefault();
     var method = $(e.target).attr('method');
     var data = $(e.target).serialize();
@@ -212,6 +231,8 @@ function App() {
     this.ajaxRequest(url, method, data, function (data) {
       if (data.user.firstName) {
         $('#c-menu--slide-left-register .c-menu__items').html('\n          Welcome ' + data.user.firstName + '!<br>\n          OMFG, ' + data.user.favouriteLine + ' is my favourite line to!\n          ');
+        if (data.token) self.setToken(data.token);
+        self.loggedInState();
       } else {
         console.log('something went wrong when registering user. data returned: ', data);
       }
@@ -248,13 +269,17 @@ function App() {
   };
 
   this.init = function () {
-    this.loggedOutState();
+    if (this.getToken()) {
+      this.loggedInState();
+    } else {
+      this.loggedOutState();
+    }
     this.stopPointsObject = this.getStopPointsObject();
     tubeMap.init();
-    //make ui listen
     $('.submit.train').on('click', this.newTrain.bind(this));
     $('form.register').on('submit', this.registerForm.bind(this));
     $('form.login').on('submit', this.loginForm.bind(this));
+    $('#logout').on('click', this.logout.bind(this));
   };
 }
 

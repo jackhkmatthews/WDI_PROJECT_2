@@ -107,8 +107,8 @@ body.has-active-menu {
 .c-menu--slide-left {
   width: 100%;
   height: 100%;
-  overflow-y: scroll;
-  padding: 0px 10px;
+  /* overflow-y: scroll; */
+  /* padding: 0px 10px; */
   box-sizing: border-box;
 }
 
@@ -212,4 +212,17 @@ li.c-menu__item.train {
 
 button.submit:hover {
     background-image: linear-gradient(#315b7f,#123f67);
+}
+
+button.c-button.add-trains {
+    position: absolute;
+    left: 300px;
+    top: 40vh;
+}
+
+.menu-container {
+    overflow-y: scroll;
+    height: 100%;
+    width: 280px;
+    padding: 0px 10px;
 }

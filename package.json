@@ -4,10 +4,14 @@
   "description": "second wdi project",
   "main": "gulpfile.js",
   "dependencies": {
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.15.2",
     "cors": "^2.8.1",
     "express": "^4.13.4",
+    "express-jwt": "^5.1.0",
+    "jsonwebtoken": "^7.2.1",
     "mongoose": "^4.4.3",
+    "morgan": "^1.7.0",
     "request": "^2.79.0",
     "request-promise": "^2.0.1"
   },

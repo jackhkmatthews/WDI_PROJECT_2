@@ -1,4 +1,5 @@
 module.exports = {
   port: process.env.PORT || 3000,
-  db: 'mongodb://localhost/tube-map'
+  db: 'mongodb://localhost/tube-map',
+  secret: 'secret'
 };
