@@ -15,72 +15,82 @@
   </head>
   <body>
     <div id="o-wrapper" class="o-wrapper">
-      <div id="floating-panel">
-        <div class="c-buttons">
-          <button id="logout" class="loggedIn">Logout</button>
-        </div>
-      </div>
       <div id="map"></div>
-    </div>
-      <nav id="c-menu--slide-left" class="c-menu c-menu--slide-left">
-        <button class="c-button add-trains" id="c-button--slide-left">Add trains</button>
-        <div class="menu-container">
-          <button class="c-menu__close">Add your trains</button>
-          <ul class="c-menu__items">
-            <li class="c-menu__item form">
-              <div class="slect-container">
-                <select id="line">
-                  <option disabled selected>Line</option>
-                </select>
-              </div>
-              <div class="slect-container">
-                <select id="origin">
-                  <option disabled selected>From</option>
-                </select>
-              </div>
-              <div class="slect-container">
-                <select id="destination">
-                  <option disabled selected>To</option>
-                </select>
-              </div>
-              <button class="submit train">Submit</button>
-            </li>
-          </ul>
-        </div>
-      </nav> <!-- /c-menu slide-left -->
-    <nav id="c-menu--slide-left-login" class="c-menu c-menu--slide-left">
-      <button id="c-button--slide-left-login" class="c-button loggedOut login">Login</button>
-      <div class="menu-container">
-        <button class="c-menu__close">Login</button>
-        <ul class="c-menu__items">
-          <li class="c-menu__item form">
-            <form class="login" action="/users/login" method="post">
-              <input type="email" name="user[email]" value="you@you.com">
-              <input type="password" name="user[password]" value="password">
-              <button type="submit" name="button" class="submit login">Login</button>
-            </form>
-          </li>
-        </ul>
+      <div class="tube-logo">
+        <a href="#"><h1 id="c-button--slide-left">Menu Menu</h1></a>
       </div>
+    </div>
+    <nav id="c-menu--slide-left" class="c-menu c-menu--slide-left">
+      <button class="c-menu__close">Add your trains</button>
+      <ul class="c-menu__items">
+        <li class="c-menu__item form">
+          <div class="slect-container">
+            <select id="line">
+              <option disabled selected>Line</option>
+            </select>
+          </div>
+          <div class="slect-container">
+            <select id="origin">
+              <option disabled selected>From</option>
+            </select>
+          </div>
+          <div class="slect-container">
+            <select id="destination">
+              <option disabled selected>To</option>
+            </select>
+          </div>
+          <button class="submit train">Submit</button>
+          <button id="c-button--slide-left-login" class="loggedOut login">Login</button>
+          <button id="c-button--slide-left-register" class="loggedOut register">Register</button>
+          <button id="logout" class="loggedIn logout">Logout</button>
+        </li>
+      </ul>
+    </nav> <!-- /c-menu slide-left -->
+    <nav id="c-menu--slide-left-login" class="c-menu c-menu--slide-left">
+      <button class="c-menu__close">Login</button>
+      <ul class="c-menu__items">
+        <li class="c-menu__item form">
+            <form class="login" action="/users/login" method="post">
+              <div class="input-container">
+                <input type="email" name="user[email]" value="you@you.com">
+              </div>
+              <div class="input-container">
+                <input type="password" name="user[password]" value="password">
+              </div>
+                <button type="submit" name="button" class="submit login">Login</button>
+                <button type="button" name="button" class="submit login" id="loginBack">Back</button>
+            </form>
+        </li>
+      </ul>
     </nav> <!-- /c-menu slide-left -->
     <nav id="c-menu--slide-left-register" class="c-menu c-menu--slide-left">
-      <button id="c-button--slide-left-register" class="c-button loggedOut register">Register</button>
-      <div class="menu-container">
-        <button class="c-menu__close">Register</button>
-        <ul class="c-menu__items">
-          <li class="c-menu__item form">
-            <form class="register" action="/users/register" method="post">
+      <button class="c-menu__close">Register</button>
+      <ul class="c-menu__items">
+        <li class="c-menu__item form">
+          <form class="register" action="/users/register" method="post">
+            <div class="input-container">
               <input type="text" name="user[firstName]" value="First Name">
+            </div>
+            <div class="input-container">
               <input type="text" name="user[lastName]" value="Last Name">
+            </div>
+            <div class="input-container">
               <input type="email" name="user[email]" value="Email">
+            </div>
+            <div class="input-container">
               <input type="text" name="user[favouriteLine]" value="Favourite Line">
+            </div>
+            <div class="input-container">
               <input type="password" name="user[password]" value="password">
+            </div>
+            <div class="input-container">
               <input type="password" name="user[passwordConfirmation]" value="password">
-              <button type="submit" name="button" class="submit register">Register</button>
-            </form>
-          </li>
-        </ul>
-      </div>
+            </div>
+            <button type="submit" name="button" class="submit register">Register</button>
+            <button type="button" name="button" class="submit register" id="registerBack">Back</button>
+          </form>
+        </li>
+      </ul>
     </nav> <!-- /c-menu slide-left -->
     <div id="c-mask" class="c-mask"></div>
     <script src="./js/menu.js" charset="utf-8"></script>

@@ -47,8 +47,18 @@ section {
  */
 
 h1 {
-  font-size: 2em;
+  font-size: 44px;
   margin: 0.67em 0;
+  background: #0019a8;
+  width: 400px;
+  position: absolute;
+  left: -44%;
+  text-align: center;
+  line-height: 68px;
+  top: 22%;
+  color: white;
+  text-transform: uppercase;
+  height: 62px;
 }
 
 /* Grouping content
@@ -458,4 +468,3 @@ template {
 
 [hidden] {
   display: none;
-}
