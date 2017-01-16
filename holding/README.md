@@ -80,3 +80,8 @@ different skins
 
 ###Sunday
 - splitting app into App, Map and Train constructor functions. Hopefully will allow new trains to be constructed on user input.
+- getting this inside callbacks = self
+
+###Monday
+
+-

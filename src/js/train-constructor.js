@@ -141,16 +141,32 @@ function Train() {
     console.log('random this', this);
   };
 
+  this.addTrainTag = function() {
+    $('.c-menu__items').prepend(`
+      <li class="c-menu__item train${tubeApp.trainCounter}" style="background-color: ${this.lineColor}">
+        <ul>
+          <li class="from">From</li>
+          <li class="originName">${this.originName}</li>
+          <li class="to">To</li>
+          <li class="destinationName">${this.destinationName}</li>
+        </ul>
+      <li>
+    `);
+  };
+
   this.init = function(){
     this.line = $('#line').val();
     this.lineColor = $(`option[value=${this.line}]`).attr('data-color');
     this.origin = $('#origin').val();
+    this.originName = $(`option[value="${this.origin}"]:first`).text();
     this.destination = $('#destination').val();
-    tubeApp.trainCounter += 1;
+    this.destinationName = $(`option[value="${this.destination}"]:first`).text();
+    this.addTrainTag.call(this);
     console.log('init this', this);
     this.random.call(this);
     this.directionsService = new google.maps.DirectionsService;
     this.googleJourneyRequest.call(this, this.departTrain);
+    tubeApp.trainCounter += 1;
   }.call(this);
 }
 

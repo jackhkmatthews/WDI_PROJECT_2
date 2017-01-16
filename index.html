@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <title>Directions service</title>
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/normalize.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
     <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
     </script>
@@ -19,31 +20,24 @@
         <button id="c-button--slide-left" class="c-button">Slide Left</button>
       </div>
     </div>
-      <!-- <b>Line: </b>
-      <select id="line">
-      </select>
-      <b>Start: </b>
-      <select id="origin">
-      </select>
-      <b>End: </b>
-      <select id="destination">
-      </select>
-      <button class="submit">Submit</button>
-      </div> -->
     <div id="map"></div>
     </div>
     <nav id="c-menu--slide-left" class="c-menu c-menu--slide-left">
-      <button class="c-menu__close">&larr; Close Menu</button>
-      <b>Line: </b>
-      <select id="line">
-      </select>
-      <b>Start: </b>
-      <select id="origin">
-      </select>
-      <b>End: </b>
-      <select id="destination">
-      </select>
-      <button class="submit">Submit</button>
+      <button class="c-menu__close">Add your trains</button>
+      <ul class="c-menu__items">
+        <li class="c-menu__item form">
+          <select id="line">
+            <option>Line</option>
+          </select>
+          <select id="origin">
+            <option>From</option>
+          </select>
+          <select id="destination">
+            <option>To</option>
+          </select>
+          <button class="submit">Submit</button>
+        </li>
+      </ul>
     </nav> <!-- /c-menu slide-left -->
     <div id="c-mask" class="c-mask"></div>
     <script src="./js/menu.js" charset="utf-8"></script>
