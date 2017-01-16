@@ -142,16 +142,17 @@ function Train() {
   };
 
   this.addTrainTag = function() {
-    $('.c-menu__items').prepend(`
-      <li class="c-menu__item train${tubeApp.trainCounter}" style="background-color: ${this.lineColor}">
+    //$("<div>").html("New Data").insertAfter("#topofpage").hide().slideDown("slow");
+    $(`
+      <li class="c-menu__item train" style="background-color: ${this.lineColor}">
         <ul>
           <li class="from">From</li>
           <li class="originName">${this.originName}</li>
           <li class="to">To</li>
           <li class="destinationName">${this.destinationName}</li>
         </ul>
-      <li>
-    `);
+      </li>
+    `).insertAfter('.c-menu__item:first').hide().slideDown('fast');
   };
 
   this.init = function(){

@@ -26,15 +26,21 @@
       <button class="c-menu__close">Add your trains</button>
       <ul class="c-menu__items">
         <li class="c-menu__item form">
-          <select id="line">
-            <option>Line</option>
-          </select>
-          <select id="origin">
-            <option>From</option>
-          </select>
-          <select id="destination">
-            <option>To</option>
-          </select>
+          <div class="slect-container">
+            <select id="line">
+              <option disabled selected>Line</option>
+            </select>
+          </div>
+          <div class="slect-container">
+            <select id="origin">
+              <option disabled selected>From</option>
+            </select>
+          </div>
+          <div class="slect-container">
+            <select id="destination">
+              <option disabled selected>To</option>
+            </select>
+          </div>
           <button class="submit">Submit</button>
         </li>
       </ul>

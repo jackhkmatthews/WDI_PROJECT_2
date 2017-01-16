@@ -144,7 +144,8 @@ function Train() {
   };
 
   this.addTrainTag = function () {
-    $('.c-menu__items').prepend('\n      <li class="c-menu__item train' + tubeApp.trainCounter + '" style="background-color: ' + this.lineColor + '">\n        <ul>\n          <li class="from">From</li>\n          <li class="originName">' + this.originName + '</li>\n          <li class="to">To</li>\n          <li class="destinationName">' + this.destinationName + '</li>\n        </ul>\n      <li>\n    ');
+    //$("<div>").html("New Data").insertAfter("#topofpage").hide().slideDown("slow");
+    $('\n      <li class="c-menu__item train" style="background-color: ' + this.lineColor + '">\n        <ul>\n          <li class="from">From</li>\n          <li class="originName">' + this.originName + '</li>\n          <li class="to">To</li>\n          <li class="destinationName">' + this.destinationName + '</li>\n        </ul>\n      </li>\n    ').insertAfter('.c-menu__item:first').hide().slideDown('fast');
   };
 
   this.init = function () {
