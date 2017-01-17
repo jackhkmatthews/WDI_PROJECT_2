@@ -144,7 +144,6 @@ function Train() {
   };
 
   this.addTrainTag = function () {
-    //$("<div>").html("New Data").insertAfter("#topofpage").hide().slideDown("slow");
     $('\n      <li class="c-menu__item train" style="background-color: ' + this.lineColor + '">\n        <ul>\n          <li class="from">From</li>\n          <li class="originName">' + this.originName + '</li>\n          <li class="to">To</li>\n          <li class="destinationName">' + this.destinationName + '</li>\n        </ul>\n      </li>\n    ').insertAfter('.c-menu__item:first').hide().slideDown('fast');
   };
 
@@ -186,12 +185,14 @@ function App() {
     this.removeToken();
   };
 
-  this.ajaxRequest = function (url, method, data, callback) {
+  this.ajaxRequest = function (url, method, data, doneCallback, failCallback) {
     $.ajax(url, {
       method: method,
       data: data
     }).done(function (data) {
-      callback(data);
+      doneCallback(data);
+    }).fail(function (data) {
+      failCallback(data);
     });
   };
 
@@ -210,15 +211,30 @@ function App() {
     var data = $(e.target).serialize();
     var url = '' + this.serverUrl + $(e.target).attr('action');
     console.log(data);
-    this.ajaxRequest(url, method, data, function (data) {
-      if (data.user.firstName) {
-        $('#c-menu--slide-left-login .c-menu__items').html('\n          Welcome back ' + data.user.firstName + '!<br>\n          Try not to break it this time!\n          ');
-        if (data.token) self.setToken(data.token);
-        self.loggedInState();
+    function doneCallback(data) {
+      console.log(data);
+      if (data.user && data.user.firstName) {
+        (function () {
+          if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
+          $('form.login').slideUp('fast');
+          var success = $('\n          <li class="c-menu__item success">\n            <div class="input-container">\n              <h3>Welcome back!</h3>\n              </div>\n          </li>\n        ');
+          success.hide();
+          $('#c-menu--slide-left-login .c-menu__items').prepend(success);
+          setTimeout(function () {
+            success.slideDown('fast');
+          }, 500);
+          if (data.token) self.setToken(data.token);
+          self.loggedInState();
+        })();
       } else {
         console.log('something went wrong when logining in user. data returned: ', data);
       }
-    });
+    }
+    function failCallback(data) {
+      console.log(data.responseJSON.message);
+      $('\n        <li class="c-menu__item error">\n          <div class="input-container">\n            <h3>' + data.responseJSON.message + '</h3>\n            </div>\n        </li>\n      ').insertBefore('#c-menu--slide-left-login .c-menu__item:first').hide().slideDown('fast');
+    }
+    this.ajaxRequest(url, method, data, doneCallback, failCallback);
   };
 
   this.registerForm = function (e) {

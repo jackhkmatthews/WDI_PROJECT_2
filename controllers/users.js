@@ -20,13 +20,11 @@ function usersRegister(req, res){
 function usersLogin(req, res){
   User.findOne({email: req.body.user.email}, (err, user) => {
     if (err) return res.status(500).json({message: err});
-    if (!user) return res.status(404).json({message: 'no match found'});
+    if (!user) return res.status(404).json({message: 'No match found'});
     if (!user.validatePassword(req.body.user.password)) {
-      return res.status(404).json({message: 'no match found: password didnt match'});
+      return res.status(404).json({message: 'No match found'});
     }
-
     const token = jwt.sign(user._id, config.secret, { expiresIn: 60*60*24 });
-
     return res.status(200).json({
       message: 'user logged in!',
       user,

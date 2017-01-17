@@ -159,18 +159,38 @@ i.fa.fa-hand-o-left {
   line-height: 42px;
 }
 
-.c-menu main {
-    padding: 0 10px;
-}
-
 .c-menu__close:focus {
   outline: none;
+}
+
+.c-menu main {
+    padding: 0 10px;
 }
 
 .c-menu__items {
   list-style: none;
   margin: 0;
   padding: 0px 0px 0px 0px;
+}
+
+h3 {
+    padding: 0px 0px 0px 13px;
+    margin: 0px;
+    line-height: 40px;
+    background: rgb(255, 255, 255);
+    color: black;
+    font-size: 16px;
+    font-weight: normal;
+
+    box-sizing: border-box;
+}
+
+.error h3 {
+  border-top: 3px solid red;
+}
+
+.success h3 {
+  border-top: 3px solid green;
 }
 
 .input-container {

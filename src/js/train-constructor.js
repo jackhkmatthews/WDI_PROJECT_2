@@ -142,7 +142,6 @@ function Train() {
   };
 
   this.addTrainTag = function() {
-    //$("<div>").html("New Data").insertAfter("#topofpage").hide().slideDown("slow");
     $(`
       <li class="c-menu__item train" style="background-color: ${this.lineColor}">
         <ul>
@@ -193,12 +192,14 @@ function App(){
     this.removeToken();
   };
 
-  this.ajaxRequest = function(url, method, data, callback){
+  this.ajaxRequest = function(url, method, data, doneCallback, failCallback){
     $.ajax(url, {
       method,
       data
     }).done(data => {
-      callback(data);
+      doneCallback(data);
+    }).fail(data => {
+      failCallback(data);
     });
   };
 
@@ -217,18 +218,40 @@ function App(){
     const data = $(e.target).serialize();
     const url = `${this.serverUrl}${$(e.target).attr('action')}`;
     console.log(data);
-    this.ajaxRequest(url, method, data, data => {
-      if(data.user.firstName) {
-        $('#c-menu--slide-left-login .c-menu__items').html(`
-          Welcome back ${data.user.firstName}!<br>
-          Try not to break it this time!
-          `);
+    function doneCallback(data){
+      console.log(data);
+      if(data.user && data.user.firstName) {
+        if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
+        $('form.login').slideUp('fast');
+        const success = $(`
+          <li class="c-menu__item success">
+            <div class="input-container">
+              <h3>Welcome back!</h3>
+              </div>
+          </li>
+        `);
+        success.hide();
+        $('#c-menu--slide-left-login .c-menu__items').prepend(success);
+        setTimeout(function(){
+          success.slideDown('fast');
+        }, 500);
         if(data.token) self.setToken(data.token);
         self.loggedInState();
       } else {
         console.log('something went wrong when logining in user. data returned: ', data);
       }
-    });
+    }
+    function failCallback(data){
+      console.log(data.responseJSON.message);
+      $(`
+        <li class="c-menu__item error">
+          <div class="input-container">
+            <h3>${data.responseJSON.message}</h3>
+            </div>
+        </li>
+      `).insertBefore('#c-menu--slide-left-login .c-menu__item:first').hide().slideDown('fast');
+    }
+    this.ajaxRequest(url, method, data, doneCallback, failCallback);
   };
 
   this.registerForm = function(e){
