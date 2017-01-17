@@ -1,72 +1,87 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <title>Directions service</title>
-    <link rel="stylesheet" href="./css/style.css">
-    <link rel="stylesheet" href="./css/normalize.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
-    <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-RY4n5NjFUrcBXa9hBvsVVWt261XrmOQ" charset="utf-8"></script>
-    <script src="./js/client-html.js" charset="utf-8"></script>
-    <script src="./js/train-constructor.js" charset="utf-8"></script>
-  </head>
-  <body>
-    <div id="o-wrapper" class="o-wrapper">
-      <div id="map"></div>
-      <div class="tube-logo">
-        <a href="#"><h1 id="c-button--slide-left">Menu Menu</h1></a>
-      </div>
+<head>
+  <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+  <meta charset="utf-8">
+  <title>Directions service</title>
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="./css/normalize.css">
+  <script src="https://use.fontawesome.com/bf5edcbaa5.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+  <script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-RY4n5NjFUrcBXa9hBvsVVWt261XrmOQ" charset="utf-8"></script>
+  <script src="./js/client-html.js" charset="utf-8"></script>
+  <script src="./js/train-constructor.js" charset="utf-8"></script>
+</head>
+<body>
+  <div id="o-wrapper" class="o-wrapper">
+    <div id="map"></div>
+    <div class="tube-logo">
+      <a href="#"><h1 id="c-button--slide-left-menu">Menu Menu</h1></a>
     </div>
-    <nav id="c-menu--slide-left" class="c-menu c-menu--slide-left">
-      <button class="c-menu__close">Add your trains</button>
+  </div>
+  <nav id="c-menu--slide-left-menu" class="c-menu c-menu--slide-left">
+    <header>
+      <h2>Add your trains<a class="c-menu__close"><i class="fa fa-hand-o-left" aria-hidden="true"></i></a></h2>
+    </header>
+    <main>
       <ul class="c-menu__items">
-        <li class="c-menu__item form">
-          <div class="slect-container">
-            <select id="line">
-              <option disabled selected>Line</option>
-            </select>
-          </div>
-          <div class="slect-container">
-            <select id="origin">
-              <option disabled selected>From</option>
-            </select>
-          </div>
-          <div class="slect-container">
-            <select id="destination">
-              <option disabled selected>To</option>
-            </select>
-          </div>
-          <button class="submit train">Submit</button>
-          <button id="c-button--slide-left-login" class="loggedOut login">Login</button>
-          <button id="c-button--slide-left-register" class="loggedOut register">Register</button>
+        <li class="c-menu__item">
+          <form>
+            <div class="input-container">
+              <select id="line">
+                <option disabled selected>Line</option>
+              </select>
+            </div>
+            <div class="input-container">
+              <select id="origin">
+                <option disabled selected>From</option>
+              </select>
+            </div>
+            <div class="input-container">
+              <select id="destination">
+                <option disabled selected>To</option>
+              </select>
+            </div>
+            <button class="submit train">Submit</button>
+          </form>
+          <a id="c-button--slide-left-login" class="loggedOut login  ">Login</a>
+          <a id="c-button--slide-left-register" class="loggedOut register  ">Register</a>
           <button id="logout" class="loggedIn logout">Logout</button>
         </li>
       </ul>
-    </nav> <!-- /c-menu slide-left -->
-    <nav id="c-menu--slide-left-login" class="c-menu c-menu--slide-left">
-      <button class="c-menu__close">Login</button>
+    </main>
+  </nav> <!-- /c-menu slide-left -->
+  <nav id="c-menu--slide-left-login" class="c-menu c-menu--slide-left">
+    <header>
+      <button class="c-menu__close" style="display: none;">Login</button>
+      <h2>Login<a class="login back  "><i class="fa fa-hand-o-left" aria-hidden="true"></i></a></h2>
+    </header>
+    <main>
       <ul class="c-menu__items">
-        <li class="c-menu__item form">
-            <form class="login" action="/users/login" method="post">
-              <div class="input-container">
-                <input type="email" name="user[email]" value="you@you.com">
-              </div>
-              <div class="input-container">
-                <input type="password" name="user[password]" value="password">
-              </div>
-                <button type="submit" name="button" class="submit login">Login</button>
-                <button type="button" name="button" class="submit login" id="loginBack">Back</button>
-            </form>
+        <li class="c-menu__item">
+          <form class="login" action="/users/login" method="post">
+            <div class="input-container">
+              <input type="email" name="user[email]" value="you@you.com">
+            </div>
+            <div class="input-container">
+              <input type="password" name="user[password]" value="password">
+            </div>
+            <button type="submit" name="button" class="submit login">Submit</button>
+          </form>
         </li>
       </ul>
-    </nav> <!-- /c-menu slide-left -->
-    <nav id="c-menu--slide-left-register" class="c-menu c-menu--slide-left">
-      <button class="c-menu__close">Register</button>
+    </main>
+  </nav> <!-- /c-menu slide-left -->
+  <nav id="c-menu--slide-left-register" class="c-menu c-menu--slide-left">
+    <header>
+      <button class="c-menu__close" style="display: none;">Register</button>
+      <h2>Register<a class="register back "><i class="fa fa-hand-o-left" aria-hidden="true"></i></a></h2>
+    </header>
+    <main>
       <ul class="c-menu__items">
-        <li class="c-menu__item form">
+        <li class="c-menu__item">
           <form class="register" action="/users/register" method="post">
             <div class="input-container">
               <input type="text" name="user[firstName]" value="First Name">
@@ -86,14 +101,14 @@
             <div class="input-container">
               <input type="password" name="user[passwordConfirmation]" value="password">
             </div>
-            <button type="submit" name="button" class="submit register">Register</button>
-            <button type="button" name="button" class="submit register" id="registerBack">Back</button>
+            <button type="submit" name="button" class="submit register">Submit</button>
           </form>
         </li>
       </ul>
-    </nav> <!-- /c-menu slide-left -->
-    <div id="c-mask" class="c-mask"></div>
-    <script src="./js/menu.js" charset="utf-8"></script>
-    <script src="./js/menu2.js" charset="utf-8"></script>
-  </body>
+    </main>
+  </nav> <!-- /c-menu slide-left -->
+  <div id="c-mask" class="c-mask"></div>
+  <script src="./js/menu.js" charset="utf-8"></script>
+  <script src="./js/menu2.js" charset="utf-8"></script>
+</body>
 </html>

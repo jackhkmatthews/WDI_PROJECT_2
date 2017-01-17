@@ -1,6 +1,6 @@
 var slideLeft = new Menu({
   wrapper: '#o-wrapper',
-  type: 'slide-left',
+  type: 'slide-left-menu',
   menuOpenerClass: '.c-button',
   maskId: '#c-mask'
 });
@@ -19,35 +19,28 @@ var slideLeftRegister = new Menu({
   maskId: '#c-mask'
 });
 
-var slideLeftBtn = document.querySelector('#c-button--slide-left');
-var slideLeftBtnLogin = document.querySelector('#c-button--slide-left-login');
-var slideLeftBtnRegister = document.querySelector('#c-button--slide-left-register');
+var slideLeftBtn = $('#c-button--slide-left-menu');
+var slideLeftBtnLogin = $('#c-button--slide-left-login');
+var slideLeftBtnRegister = $('#c-button--slide-left-register');
 
-slideLeftBtn.addEventListener('click', function(e) {
+slideLeftBtn.on('click', function(e) {
   e.preventDefault;
   slideLeft.open();
 });
 
-slideLeftBtnLogin.addEventListener('click', function(e) {
+slideLeftBtnLogin.on('click', function(e) {
   e.preventDefault;
   slideLeftLogin.open();
 });
 
-slideLeftBtnRegister.addEventListener('click', function(e) {
+slideLeftBtnRegister.on('click', function(e) {
   e.preventDefault;
   slideLeftRegister.open();
 });
 
-$('#loginBack').on('click', function(e){
-  console.log('clicked');
+$('.back').on('click', function(e){
   e.preventDefault;
   slideLeftLogin.close();
-  slideLeft.open();
-});
-
-$('#registerBack').on('click', function(e){
-  console.log('clicked');
-  e.preventDefault;
   slideLeftRegister.close();
   slideLeft.open();
 });

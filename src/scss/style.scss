@@ -20,6 +20,17 @@ ul {
   padding: 0px 8px 0px 13px;
   height: 100%;
 }
+
+button {
+  color: white;
+  background-image: linear-gradient(to top,#164B79 0%,#164B79 2px,#1A5A92 2px,#3F75A4 100%);
+  border-radius: 5px;
+  border: 1px solid rgb(22, 75, 121);
+}
+
+button:hover {
+  background-image: linear-gradient(#315b7f,#123f67);
+}
 /***********Map******************************/
 
 #map {
@@ -94,55 +105,46 @@ body.has-active-menu {
   transition: transform 0.3s;
 }
 
-.c-menu__items {
-  list-style: none;
-  margin: 0;
-  padding: 0px 0px 0px 0px;
+.c-menu--slide-left {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box;
 }
 
-.c-menu__close {
-  color: #fff;
-  background-color: #2D3039;
-  font-size: 14px;
-  border: none;
-  box-shadow: none;
-  border-radius: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  cursor: pointer;
+.c-menu header {
+    background-color: #2D3039;
+    color: #fff;
+}
+
+.c-menu main {
+    padding: 0 10px;
+}
+
+.c-menu h2 {
+  height: 40px;
+  text-transform: uppercase;
+  margin: 0;
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 25px;
+  font-weight: 700;
+  text-align: left;
+  line-height: 40px;
 }
 
 .c-menu__close:focus {
   outline: none;
 }
 
-.c-menu--slide-left {
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  padding: 0px 10px;
-  box-sizing: border-box;
+i.fa.fa-hand-o-left {
+    padding-left: 20px;
 }
 
-.c-menu--slide-left .c-menu__item {
-  color: white;
-}
-
-.c-menu--slide-left .c-menu__link {
-  display: block;
-  padding: 12px 24px;
-  color: #fff;
-}
-
-.c-menu--slide-left .c-menu__close {
-  display: block;
-  padding: 7px 0px;
-  width: 300px;
-  font-size: 30px;
-  font-weight: bold;
-  text-transform: uppercase;
-  margin-left: -10px;
+.c-menu__items {
+  list-style: none;
+  margin: 0;
+  padding: 0px 0px 0px 0px;
 }
 
 .c-menu--slide-left {
@@ -153,20 +155,6 @@ body.has-active-menu {
 
 .c-menu--slide-left.is-active {
   transform: translateX(0);
-}
-
-.c-menu__item.form select {
-  border-radius: 0px;
-  -webkit-appearance: none;
-  width: 100%;
-  height: 40px;
-  padding: 0px 12px;
-  font-size: 16px;
-  background-color: #fff;
-  box-sizing: border-box;
-  border: 0px;
-  border-top: 3px solid #e6e6e6;
-  color: #a2a3aa;
 }
 
 .c_menu__items .c-menu__item ul li {
@@ -185,14 +173,6 @@ ul.c-menu__items .c-menu__item ul li {
 button.submit {
   width: 100%;
   height: 40px;
-  color: white;
-  background-image: linear-gradient(to top,#164B79 0%,#164B79 2px,#1A5A92 2px,#3F75A4 100%);
-  border-radius: 5px;
-  border: 1px solid rgb(22, 75, 121);
-}
-
-button.submit:hover {
-  background-image: linear-gradient(#315b7f,#123f67);
 }
 
 .input-container {
@@ -205,35 +185,42 @@ nav.c-menu {
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);
 }
 
-/***********Train Pane***********************/
-
-ul.c-menu__items .c-menu__item ul li.from {
-  width: 55px;
-}
-
-ul.c-menu__items .c-menu__item ul li.to {
-  width: 55px;
-}
-
-ul.c-menu__items .c-menu__item ul li.originName {
-  width: 202px;
-}
-
-li.destinationName {
-  width: 202px;
-}
-
-.slect-container {
-  border: 1px solid #cccccc;
+.c-menu__item form select {
+  border-radius: 0px;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 40px;
+  padding: 0px 12px;
+  font-size: 16px;
+  background-color: #fff;
   box-sizing: border-box;
-  margin: 5px 0px;
+  border: 0px;
+  border-top: 3px solid #e6e6e6;
+  color: #a2a3aa;
 }
+
+/***********Train Pane***********************/
 
 li.c-menu__item.train {
   height: 80px;
   border: 1px solid #cccccc;
   margin-top: 5px;
 }
+
+c-menu__item.train {
+    color: white;
+}
+
+li.from,
+li.to {
+  width: 25%;
+}
+
+li.originName,
+li.destinationName {
+  width: 70%;
+}
+
 /***********Login Pane***********************/
 
 button.login {
