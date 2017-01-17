@@ -93,3 +93,6 @@ different skins
 
 ###Tuesday
 -refactoring css and classes link an absolute legend.  feels great.
+- authentication and menu functionality and styling
+- re-writing seeds logic to account for stoppoints having more than one line setTimeout, promises, schema, model
+- 

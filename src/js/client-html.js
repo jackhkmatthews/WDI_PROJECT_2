@@ -1,4 +1,31 @@
-const tubeLineColors = ['#95CDBA', '#0098D4', '#A0A5A9', '#00782A', '#9B0056', '#000000', '#003688', '#E32017', '#F3A9BB', '#B36305'
+const tubeLineColors = ['#B36305', '#E32017', '#ffce00', '#00782A', '#F3A9BB', '#A0A5A9', '#9B0056', '#000000', '#003688', '#0098D4', '#95CDBA'];
+
+const tubeLineIds = [
+  'bakerloo',
+  'central',
+  'circle',
+  'district',
+  'hammersmith-city',
+  'jubilee',
+  'metropolitan',
+  'northern',
+  'piccadilly',
+  'victoria',
+  'waterloo-city'
+];
+
+const tubeLineNames = [
+  'Bakerloo',
+  'Central',
+  'Circle',
+  'District',
+  'Hammersmith & City',
+  'Jubilee',
+  'Metropolitan',
+  'Northern',
+  'Piccadilly',
+  'Victoria',
+  'Waterloo & City'
 ];
 
 const html = html || {};
@@ -11,6 +38,7 @@ html.getstopPointsArray = function getstopPointsArray(callback){
   const array = [];
   $.get(`http://localhost:3000/api/stopPoints`)
     .done(data => {
+      console.log(data);
       const stations = data.stopPoints;
       $.each(stations, (index, station) => {
         const element = {
@@ -18,8 +46,8 @@ html.getstopPointsArray = function getstopPointsArray(callback){
           lat: parseFloat(station.lat),
           lng: parseFloat(station.lng),
           id: station.id,
-          lineId: station.lineId,
-          lineName: station.lineName
+          lineIds: station.lineIds,
+          lineNames: station.lineNames
         };
         array.push(element);
       });
@@ -34,21 +62,11 @@ html.init = function(stopPointsArray){
 };
 
 html.getLinesArray = function(){
-  const lineIds =[];
-  const lineNames = [];
   html.linesArray = [];
-  $(html.stopPointsArray).each((i, stopPoint) => {
-    if(lineIds.indexOf(stopPoint.lineId) === -1){
-      lineIds.push(stopPoint.lineId);
-    }
-    if(lineNames.indexOf(stopPoint.lineName) === -1){
-      lineNames.push(stopPoint.lineName);
-    }
-  });
-  for (var i = 0; i < lineIds.length; i++) {
+  for (var i = 0; i < tubeLineIds.length; i++) {
     html.linesArray.push({
-      lineId: lineIds[i],
-      lineName: lineNames[i],
+      lineId: tubeLineIds[i],
+      lineName: tubeLineNames[i],
       lineColor: tubeLineColors[i]
     });
   }
@@ -68,15 +86,20 @@ html.populateStopPointSelects = function(e){
   console.log('value:', lineId);
   const stopPoints = [];
   $(html.stopPointsArray).each((index, stopPoint) => {
-    if(stopPoint.lineId === lineId){
-      stopPoints.push(stopPoint);
-    }
+    console.log('stoppointsarray', html.stopPointsArray);
+    $(stopPoint.lineIds).each((index, stopPointlineId) => {
+      console.log('stop point line id', stopPointlineId);
+      if(stopPointlineId === lineId){
+        stopPoints.push(stopPoint);
+      }
+    });
   });
   html.populateStopPointSelect(stopPoints, '#origin');
   html.populateStopPointSelect(stopPoints, '#destination');
 };
 
 html.populateStopPointSelect = function(stopPoints, jquerySelector){
+  console.log('stopPoints', stopPoints);
   $(jquerySelector).html('');
   $(stopPoints).each((index, stopPoint) => {
     $(jquerySelector).append(`

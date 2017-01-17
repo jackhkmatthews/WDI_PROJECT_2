@@ -5,8 +5,8 @@ const stopPointSchema = new mongoose.Schema({
   lng: {type: String, required: true},
   commonName: {type: String, required: true, unique: true},
   id: {type: String, required: true, unique: true},
-  lineName: {type: String, required: true},
-  lineId: {type: String, required: true}
+  lineNames: [{type: String, required: true}],
+  lineIds: [{type: String, required: true}]
 },{
   timestamps: true
 });

@@ -7,13 +7,19 @@ mongoose.connect(config.db, () => console.log(`connected to ${config.db}`));
 
 StopPoint.collection.drop();
 
+const stopPoints = [];
+
 function tflsLinesRequest(req, res) {
   return rp(`https://api.tfl.gov.uk/Line/Mode/tube`)
   .then(htmlString => {
     const lines = JSON.parse(htmlString);
-    return lines.forEach(function(line) {
+    lines.forEach(function(line) {
+      console.log(line.name);
       return tflsLineToStopPoints(req, res, line);
     });
+    setTimeout(function(){
+      return tflStopPointsToDb(req, res, stopPoints);
+    }, 10000);
   })
   .catch(err => {
     return res.status(500).json(err);
@@ -23,9 +29,23 @@ function tflsLinesRequest(req, res) {
 function tflsLineToStopPoints(req, res, line){
   rp(`https://api.tfl.gov.uk/Line/${line.id}/StopPoints?app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
   .then(htmlString => {
-    const stopPoints = JSON.parse(htmlString);
-    return stopPoints.forEach(function(stopPoint) {
-      return tflsStopPointToDb(req, res, stopPoint, line.name, line.id);
+    const stations = JSON.parse(htmlString);
+    stations.forEach(function(station) {
+      const index = arrayObjectIndexOf(stopPoints, station.id, 'id');
+      if (index === -1){
+        const newStation = {
+          'commonName': station.commonName,
+          'lat': station.lat,
+          'lng': station.lon,
+          'id': station.id,
+          'lineNames': [line.name],
+          'lineIds': [line.id]
+        };
+        stopPoints.push(newStation);
+      } else {
+        stopPoints[index].lineNames.push(line.name);
+        stopPoints[index].lineIds.push(line.id);
+      }
     });
   })
   .catch(err => {
@@ -33,18 +53,27 @@ function tflsLineToStopPoints(req, res, line){
   });
 }
 
-function tflsStopPointToDb(req, res, stopPoint, lineName, lineId){
-  const doc = new StopPoint({
-    'commonName': stopPoint.commonName,
-    'lat': stopPoint.lat,
-    'lng': stopPoint.lon,
-    'id': stopPoint.id,
-    'lineName': lineName,
-    'lineId': lineId
-  });
-  doc.save((err, doc) => {
-    // if (err) return console.log(err);
-    return console.log(`${doc} saved!`);
+function arrayObjectIndexOf(myArray, searchTerm, property) {
+  for(var i = 0, len = myArray.length; i < len; i++) {
+    if (myArray[i][property] === searchTerm) return i;
+  }
+  return -1;
+}
+
+function tflStopPointsToDb(req, res, stopPoints){
+  stopPoints.forEach(function(stopPoint){
+    const doc = new StopPoint({
+      'commonName': stopPoint.commonName,
+      'lat': stopPoint.lat,
+      'lng': stopPoint.lng,
+      'id': stopPoint.id,
+      'lineNames': stopPoint.lineNames,
+      'lineIds': stopPoint.lineIds
+    });
+    doc.save((err, doc) => {
+      if (err) return console.log(err);
+      return;
+    });
   });
 }
 
