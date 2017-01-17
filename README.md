@@ -92,10 +92,13 @@ different skins
 - done authentication including back end api requests, routes, controllers, schema, password hashing, password confirmation, tokens, front end tokens, logged in logged out states.
 
 ###Tuesday
--refactoring css and classes link an absolute legend.  feels great.
+- refactoring css and classes link an absolute legend.  feels great.
 - authentication and menu functionality and styling
 - re-writing seeds logic to account for stoppoints having more than one line setTimeout, promises, schema, model
 - trying to plug in tfl departure data
 - got journey stoppoints array
 - figuring out logic to filter arrivals in right direction
 - smashing 'this' and callbacks - see train init and get journey stoppoints array functions.
+- smahinf this and callbacks, see control flow of train now with tfl departure info
+- if blank then recheck logic
+- 
