@@ -89,3 +89,7 @@ different skins
 - user authentication from scratch 
 - user register, no password (smashed it)
 - real understanding of client side ajax request callbacks.
+- done authentication including back end api requests, routes, controllers, schema, password hashing, password confirmation, tokens, front end tokens, logged in logged out states.
+
+###Tuesday
+-refactoring css and classes link an absolute legend.  feels great.
