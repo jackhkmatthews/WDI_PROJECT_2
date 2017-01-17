@@ -17,6 +17,7 @@ function tflsStopPointArrivals(req, res){
   return rp(`https://api.tfl.gov.uk/StopPoint/${req.params.nextStationId}/Arrivals?app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
     .then(htmlString => {
       const arrivals = JSON.parse(htmlString);
+      console.log('number of arrivals to StopPoint', arrivals.length);
       //check if end of line
       // console.log('data from tfl:', arrivals);
       // for (var i = 0; i < data.length; i++) {
@@ -26,23 +27,15 @@ function tflsStopPointArrivals(req, res){
       // }
       const departures = [];
       arrivals.forEach((arrival, index) => {
-        if(arrival.currentLocation.includes(req.params.stationName)){
+        if(arrival.currentLocation.includes(req.params.stationName) && arrival.currentLocation.includes('Departing') || arrival.currentLocation.includes(req.params.stationName) && arrival.currentLocation.includes('At')){
           departures.push(arrival);
         }
       });
-      //if no trains in right direction return message
-      if(departures === []) {
-        return res.status(404).json({message: 'no departing trains'});
+      console.log('number of matching departures to StopPoint', departures.length);
+      if(departures[0]) {
+        return res.status(200).json(departures[0]);
       }
-      // take first train in right direction
-      // then find train arriving soonest and return
-      let nextDeparture = departures[0];
-      departures.forEach((departure, index) => {
-        if (departure.timeToStation < nextDeparture.timeToStation){
-          nextDeparture = departure;
-        }
-      });
-      return res.status(200).json(nextDeparture);
+      return res.status(200).json({message: 'no departing trains'});
     })
     .catch(err => {
       console.log(err);

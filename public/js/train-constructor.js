@@ -11,8 +11,8 @@ function Map() {
     this.directionsService = new google.maps.DirectionsService();
     this.map = new google.maps.Map(document.getElementById('map'), {
       zoom: this.mapZoom,
-      center: this.mapCenter,
-      disableDefaultUI: true
+      center: this.mapCenter
+      // disableDefaultUI: true
     });
   };
 }
@@ -20,6 +20,10 @@ function Map() {
 var tubeMap = new Map();
 
 function Train() {
+
+  // _____________________________________________
+  // ...............vaiables......................
+  // _____________________________________________
 
   this.line;
   this.lineColor;
@@ -31,6 +35,10 @@ function Train() {
   this.animationRefreshRate = 20;
   this.departureIndex = 0;
 
+  // _____________________________________________
+  // ...............utility......................
+  // _____________________________________________
+
   this.removeOldSection = function (polyline, interval) {
     polyline.setMap(null);
     polyline = null;
@@ -41,27 +49,6 @@ function Train() {
     var numberOfIntervals = duration / animationRefreshRate;
     var distancePercentagePerInterval = 100 / numberOfIntervals;
     return distancePercentagePerInterval;
-  };
-
-  this.animateIcon = function (polyline, duration, delay) {
-    var self = this;
-    var count = 0;
-    this.originIndex += 1;
-    this.destinationIndex += 1;
-    var intervalId = function intervalId() {
-      var countIncriment = self.getCountIncriment(duration, self.animationRefreshRate);
-      var interval = setInterval(function () {
-        count += countIncriment;
-        if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
-          self.removeOldSection(self.pathPolyLine, interval);
-          $('.train' + (tubeApp.trainCounter - 1)).remove();
-          return console.log('finished journey');
-        }
-        polyline.icons[0].offset = count + '%';
-        polyline.set('icons', polyline.icons);
-      }, this.animationRefreshRate);
-    };
-    setTimeout(intervalId, delay);
   };
 
   this.getDuration = function (response) {
@@ -104,8 +91,78 @@ function Train() {
     return pathCoordinates;
   };
 
-  this.departTrain = function (response) {
-    this.journeyCoordinates = this.getPolylinePath(response);
+  this.loseLastTwoWords = function (string) {
+    var lastIndex = string.lastIndexOf(' ');
+    string = string.substring(0, lastIndex);
+    lastIndex = string.lastIndexOf(' ');
+    string = string.substring(0, lastIndex);
+    return string;
+  };
+
+  // _____________________________________________
+  // ...............control flow..................
+  // _____________________________________________
+
+  this.animateIcon = function (polyline, duration, delay) {
+    var self = this;
+    var count = 0;
+    this.originIndex += 1;
+    this.destinationIndex += 1;
+    var intervalId = function intervalId() {
+      var countIncriment = self.getCountIncriment(duration, self.animationRefreshRate);
+      var interval = setInterval(function () {
+        count += countIncriment;
+        if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
+          self.removeOldSection(self.pathPolyLine, interval);
+          $('.train' + (tubeApp.trainCounter - 1)).remove();
+          return console.log('finished journey');
+        }
+        polyline.icons[0].offset = count + '%';
+        polyline.set('icons', polyline.icons);
+      }, this.animationRefreshRate);
+    };
+    setTimeout(intervalId, delay);
+  };
+
+  this.departTrain = function () {
+    //can put 'response' back in
+    console.log('4. departing train');
+    // this.journeyCoordinates = this.getPolylinePath(this.googleJourneyResponse);
+    // this.pathPolyLine = this.makePolyline(this.journeyCoordinates, false, this.lineColor, 1, 4, [{
+    //   icon: {
+    //     path: 0,
+    //     scale: 8,
+    //     strokeColor: this.lineColor
+    //   },
+    //   offset: '0%'
+    // }], this.map);
+    // this.pathPolyLine.setMap(tubeMap.map);
+    this.duration = this.getDuration(this.googleJourneyResponse);
+    this.delay = 0;
+    this.animateIcon.call(this, this.pathPolyLine, this.duration, this.delay);
+  };
+
+  this.getStationsNextDeparture = function () {
+    //add in callback
+    var self = this;
+    var stationName = this.loseLastTwoWords(this.journeyStoppointsNameArray[this.departureIndex]);
+    var nextStationId = this.journeyStoppointsIdArray[this.departureIndex];
+    $.get('http://localhost:3000/tfl/StopPoint/' + stationName + '/Arrivals/' + nextStationId).done(function (response) {
+      console.log('3. tfl next departure response:', response);
+      if (!response.timeToStation) {
+        setTimeout(function () {
+          return self.getStationsNextDeparture();
+        }, 15000);
+      } else {
+        self.nextDeparture = response;
+        self.timeToFirstStation = self.nextDeparture.timeToStation;
+        return self.departTrain();
+      }
+    });
+  };
+
+  this.plotPolyLine = function () {
+    this.journeyCoordinates = this.getPolylinePath(this.googleJourneyResponse);
     this.pathPolyLine = this.makePolyline(this.journeyCoordinates, false, this.lineColor, 1, 4, [{
       icon: {
         path: 0,
@@ -115,13 +172,10 @@ function Train() {
       offset: '0%'
     }], this.map);
     this.pathPolyLine.setMap(tubeMap.map);
-    // this.duration = this.getDuration(response);
-    console.log(this.duration);
-    this.delay = 0;
-    this.animateIcon.call(this, this.pathPolyLine, this.duration, this.delay);
   };
 
-  this.googleJourneyRequest = function (callback) {
+  this.googleJourneyRequest = function () {
+    //put callback back
     var self = this;
     self.directionsService.route({
       origin: this.origin,
@@ -129,47 +183,16 @@ function Train() {
       travelMode: 'TRANSIT'
     }, function (response, status) {
       if (status === 'OK') {
-        console.log('google whole route response: ', response);
-        callback.call(self, response);
-      }
-    });
-  };
-
-  this.addTrainTag = function () {
-    $('\n      <li class="c-menu__item train train' + tubeApp.trainCounter + '" style="background-color: ' + this.lineColor + '">\n        <ul>\n          <li class="from">From</li>\n          <li class="originName">' + this.originName + '</li>\n          <li class="to">To</li>\n          <li class="destinationName">' + this.destinationName + '</li>\n        </ul>\n      </li>\n    ').insertAfter('.c-menu__item:first').hide().slideDown('fast');
-  };
-
-  this.loseLastTwoWords = function (string) {
-    var lastIndex = string.lastIndexOf(' ');
-    string = string.substring(0, lastIndex);
-    lastIndex = string.lastIndexOf(' ');
-    string = string.substring(0, lastIndex);
-    return string;
-  };
-
-  this.getStationsNextDeparture = function (callback) {
-    var _this = this;
-
-    var self = this;
-    console.log('this next departure', this);
-    var stationName = this.loseLastTwoWords(this.journeyStoppointsNameArray[this.departureIndex]);
-    var nextStationId = this.journeyStoppointsIdArray[this.departureIndex];
-    $.get('http://localhost:3000/tfl/StopPoint/' + stationName + '/Arrivals/' + nextStationId).done(function (response) {
-      console.log('tfl next departure response:', response);
-      if (!response.timeToStation) {
-        setTimeout(function () {
-          return _this.getStationsNextDeparture(stationName, nextStationId, callback);
-        }, 15000);
-      } else {
-        self.nextDeparture = response;
-        self.duration = self.nextDeparture.timeToStation;
-        return console.log('next departure', self.nextDeparture);
+        self.googleJourneyResponse = response;
+        self.plotPolyLine();
+        self.getStationsNextDeparture(null);
+        return console.log('2. google whole route response: ', response);
       }
     });
   };
 
   this.getjourneyStoppointsArray = function (origin, destination, callback) {
-    var _this2 = this;
+    var _this = this;
 
     var idArray = [];
     var nameArray = [];
@@ -181,13 +204,18 @@ function Train() {
           stopPoints = leg.path.stopPoints;
         }
       });
-      nameArray.push(_this2.originName);
+      nameArray.push(_this.originName);
       $.each(stopPoints, function (index, stopPoint) {
         idArray.push(stopPoint.id);
         nameArray.push(stopPoint.name);
       });
-      return callback.call(_this2, idArray, nameArray);
+      console.log('1. getjourneyStoppointsArray response', route);
+      return callback.call(_this, idArray, nameArray);
     });
+  };
+
+  this.addTrainTag = function () {
+    $('\n      <li class="c-menu__item train train' + tubeApp.trainCounter + '" style="background-color: ' + this.lineColor + '">\n      <ul>\n      <li class="from">From</li>\n      <li class="originName">' + this.originName + '</li>\n      <li class="to">To</li>\n      <li class="destinationName">' + this.destinationName + '</li>\n      </ul>\n      </li>\n      ').insertAfter('.c-menu__item:first').hide().slideDown('fast');
   };
 
   this.init = function () {
@@ -196,16 +224,15 @@ function Train() {
     this.origin = $('#origin').val();
     this.originName = $('option[value="' + this.origin + '"]:first').text();
     this.destination = $('#destination').val();
+    this.addTrainTag.call(this);
+    this.directionsService = new google.maps.DirectionsService();
+    tubeApp.trainCounter += 1;
     this.destinationName = $('option[value="' + this.destination + '"]:first').text();
     this.getjourneyStoppointsArray(this.origin, this.destination, function (idArray, nameArray) {
       this.journeyStoppointsNameArray = nameArray;
       this.journeyStoppointsIdArray = idArray;
-      this.getStationsNextDeparture(null);
-      this.googleJourneyRequest.call(this, this.departTrain);
+      this.googleJourneyRequest.call(this);
     });
-    this.addTrainTag.call(this);
-    this.directionsService = new google.maps.DirectionsService();
-    tubeApp.trainCounter += 1;
   }.call(this);
 }
 
