@@ -9,7 +9,8 @@ function Map() {
     this.directionsService = new google.maps.DirectionsService;
     this.map = new google.maps.Map(document.getElementById('map'), {
       zoom: this.mapZoom,
-      center: this.mapCenter
+      center: this.mapCenter,
+      disableDefaultUI: true
     });
   };
 }
@@ -52,6 +53,7 @@ function Train() {
         count += countIncriment;
         if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
           self.removeOldSection(self.pathPolyLine, interval);
+          $(`.train${tubeApp.trainCounter - 1}`).remove();
           return console.log('finished journey');
         }
         polyline.icons[0].offset = (count) + '%';
@@ -143,7 +145,7 @@ function Train() {
 
   this.addTrainTag = function() {
     $(`
-      <li class="c-menu__item train" style="background-color: ${this.lineColor}">
+      <li class="c-menu__item train train${tubeApp.trainCounter}" style="background-color: ${this.lineColor}">
         <ul>
           <li class="from">From</li>
           <li class="originName">${this.originName}</li>
@@ -297,7 +299,8 @@ function App(){
     this.ajaxRequest(url, method, data, doneCallback, failCallback);
   };
 
-  this.newTrain = function(){
+  this.newTrain = function(e){
+    if (e) e.preventDefault;
     this['train' + this.trainCounter] = new Train();
   };
 

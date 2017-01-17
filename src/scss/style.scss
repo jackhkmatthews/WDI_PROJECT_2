@@ -78,11 +78,8 @@ body.has-active-menu {
   border: 55px solid #dc241f;
   border-radius: 171px;
   box-sizing: border-box;
-  transition: background, 0.3s;
-}
-
-.tube-logo:hover {
-  background-color: white;
+  transition: opacity, 0.3s;
+  opacity: 0.5;
 }
 
 .tube-logo h1 {
@@ -98,7 +95,11 @@ body.has-active-menu {
   color: white;
   text-transform: uppercase;
   height: 62px;
-  transition: box-shadow, 0.2s;
+  opacity: inherit;
+}
+
+.tube-logo:hover {
+  opacity: 1;
 }
 
 /***********panes****************************/
