@@ -23,8 +23,9 @@
   </div>
   <nav id="c-menu--slide-left-menu" class="c-menu c-menu--slide-left">
     <header>
-      <a id="c-button--slide-left-login" class="loggedOut login  ">Login</a>
-      <a id="c-button--slide-left-register" class="loggedOut register  ">Register</a>
+      <a id="c-button--slide-left-login" class="loggedOut login">Login</a>
+      <a id="c-button--slide-left-register" class="loggedOut register">Register</a>
+      <a id="logout" class="loggedIn logout">Logout</a>
       <a class="c-menu__close"><i class="fa fa-hand-o-left" aria-hidden="true"></i></a>
       <h2>Add your trains</h2>
     </header>
@@ -49,7 +50,6 @@
             </div>
             <button class="submit train">All aboard!</button>
           </form>
-          <button id="logout" class="loggedIn logout">Logout</button>
         </li>
       </ul>
     </main>
@@ -87,22 +87,22 @@
         <li class="c-menu__item">
           <form class="register" action="/users/register" method="post">
             <div class="input-container">
-              <input type="text" name="user[firstName]" value="First Name">
+              <input type="text" name="user[firstName]" placeholder="First Name">
             </div>
             <div class="input-container">
-              <input type="text" name="user[lastName]" value="Last Name">
+              <input type="text" name="user[lastName]" placeholder="Last Name">
             </div>
             <div class="input-container">
-              <input type="email" name="user[email]" value="Email">
+              <input type="email" name="user[email]" placeholder="Email">
             </div>
             <div class="input-container">
-              <input type="text" name="user[favouriteLine]" value="Favourite Line">
+              <input type="text" name="user[favouriteLine]" placeholder="Favourite Line">
             </div>
             <div class="input-container">
-              <input type="password" name="user[password]" value="password">
+              <input type="password" name="user[password]" placeholder="password">
             </div>
             <div class="input-container">
-              <input type="password" name="user[passwordConfirmation]" value="password">
+              <input type="password" name="user[passwordConfirmation]" placeholder="password confirmation">
             </div>
             <button type="submit" name="button" class="submit register">Submit</button>
           </form>

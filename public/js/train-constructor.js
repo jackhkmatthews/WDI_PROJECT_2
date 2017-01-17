@@ -222,7 +222,7 @@ function App() {
           $('#c-menu--slide-left-login .c-menu__items').prepend(success);
           setTimeout(function () {
             success.slideDown('fast');
-          }, 500);
+          }, 300);
           if (data.token) self.setToken(data.token);
           self.loggedInState();
         })();
@@ -243,16 +243,30 @@ function App() {
     var method = $(e.target).attr('method');
     var data = $(e.target).serialize();
     var url = '' + this.serverUrl + $(e.target).attr('action');
-
-    this.ajaxRequest(url, method, data, function (data) {
-      if (data.user.firstName) {
-        $('#c-menu--slide-left-register .c-menu__items').html('\n          Welcome ' + data.user.firstName + '!<br>\n          OMFG, ' + data.user.favouriteLine + ' is my favourite line to!\n          ');
-        if (data.token) self.setToken(data.token);
-        self.loggedInState();
+    function doneCallback(data) {
+      console.log(data);
+      if (data.user && data.user.firstName) {
+        (function () {
+          if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
+          $('form.register').slideUp('fast');
+          var success = $('\n          <li class="c-menu__item success">\n            <div class="input-container">\n              <h3>Welcome!</h3>\n              <p>' + data.user.favouriteLine + ' line ay? One of the greats!</p>\n              </div>\n          </li>\n        ');
+          success.hide();
+          $('#c-menu--slide-left-register .c-menu__items').prepend(success);
+          setTimeout(function () {
+            success.slideDown('fast');
+          }, 300);
+          if (data.token) self.setToken(data.token);
+          self.loggedInState();
+        })();
       } else {
-        console.log('something went wrong when registering user. data returned: ', data);
+        console.log('something went wrong when logining in user. data returned: ', data);
       }
-    });
+    }
+    function failCallback(data) {
+      console.log(data.responseJSON.message);
+      $('\n        <li class="c-menu__item error">\n          <div class="input-container">\n            <h3>Please try again.</h3>\n            </div>\n        </li>\n      ').insertBefore('#c-menu--slide-left-register .c-menu__item:first').hide().slideDown('fast');
+    }
+    this.ajaxRequest(url, method, data, doneCallback, failCallback);
   };
 
   this.newTrain = function () {
@@ -275,8 +289,12 @@ function App() {
   };
 
   this.loggedOutState = function () {
+    console.log('logged out state');
     $('.loggedOut').show();
     $('.loggedIn').hide();
+    $('.c-menu__item.success').remove();
+    $('form.login').show();
+    $('form.register').show();
   };
 
   this.loggedInState = function () {

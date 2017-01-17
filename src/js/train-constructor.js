@@ -234,7 +234,7 @@ function App(){
         $('#c-menu--slide-left-login .c-menu__items').prepend(success);
         setTimeout(function(){
           success.slideDown('fast');
-        }, 500);
+        }, 300);
         if(data.token) self.setToken(data.token);
         self.loggedInState();
       } else {
@@ -260,19 +260,41 @@ function App(){
     const method = $(e.target).attr('method');
     const data = $(e.target).serialize();
     const url = `${this.serverUrl}${$(e.target).attr('action')}`;
-
-    this.ajaxRequest(url, method, data, data => {
-      if(data.user.firstName) {
-        $('#c-menu--slide-left-register .c-menu__items').html(`
-          Welcome ${data.user.firstName}!<br>
-          OMFG, ${data.user.favouriteLine} is my favourite line to!
-          `);
+    function doneCallback(data){
+      console.log(data);
+      if(data.user && data.user.firstName) {
+        if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
+        $('form.register').slideUp('fast');
+        const success = $(`
+          <li class="c-menu__item success">
+            <div class="input-container">
+              <h3>Welcome!</h3>
+              <p>${data.user.favouriteLine} line ay? One of the greats!</p>
+              </div>
+          </li>
+        `);
+        success.hide();
+        $('#c-menu--slide-left-register .c-menu__items').prepend(success);
+        setTimeout(function(){
+          success.slideDown('fast');
+        }, 300);
         if(data.token) self.setToken(data.token);
         self.loggedInState();
       } else {
-        console.log('something went wrong when registering user. data returned: ', data);
+        console.log('something went wrong when logining in user. data returned: ', data);
       }
-    });
+    }
+    function failCallback(data){
+      console.log(data.responseJSON.message);
+      $(`
+        <li class="c-menu__item error">
+          <div class="input-container">
+            <h3>Please try again.</h3>
+            </div>
+        </li>
+      `).insertBefore('#c-menu--slide-left-register .c-menu__item:first').hide().slideDown('fast');
+    }
+    this.ajaxRequest(url, method, data, doneCallback, failCallback);
   };
 
   this.newTrain = function(){
@@ -296,8 +318,12 @@ function App(){
   };
 
   this.loggedOutState = function(){
+    console.log('logged out state');
     $('.loggedOut').show();
     $('.loggedIn').hide();
+    $('.c-menu__item.success').remove();
+    $('form.login').show();
+    $('form.register').show();
   };
 
   this.loggedInState = function(){
