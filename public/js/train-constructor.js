@@ -29,6 +29,7 @@ function Train() {
   this.originIndex = 0;
   this.destinationIndex = 0;
   this.animationRefreshRate = 20;
+  this.departureIndex = 0;
 
   this.removeOldSection = function (polyline, interval) {
     polyline.setMap(null);
@@ -44,12 +45,10 @@ function Train() {
 
   this.animateIcon = function (polyline, duration, delay) {
     var self = this;
-    console.log('animateIcon this', this);
     var count = 0;
     this.originIndex += 1;
     this.destinationIndex += 1;
     var intervalId = function intervalId() {
-      console.log('intervalId this', self);
       var countIncriment = self.getCountIncriment(duration, self.animationRefreshRate);
       var interval = setInterval(function () {
         count += countIncriment;
@@ -66,7 +65,6 @@ function Train() {
   };
 
   this.getDuration = function (response) {
-    console.log('getDuration this', this);
     var durationSecs = void 0;
     for (var i = 0; i < response.routes[0].legs[0].steps.length; i++) {
       if (response.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT') {
@@ -77,7 +75,6 @@ function Train() {
   };
 
   this.makePolyline = function makePolyline(path, geodesic, strokeColor, strokeOpacity, strokeWeight, icons, map) {
-    console.log('makePolyline this', this);
     var polyline = new google.maps.Polyline({
       path: path,
       geodesic: geodesic,
@@ -91,7 +88,6 @@ function Train() {
   };
 
   this.getPolylinePath = function (routeResponse) {
-    console.log('getPolylinePath this', this);
     for (var i = 0; i < routeResponse.routes[0].legs[0].steps.length; i++) {
       if (routeResponse.routes[0].legs[0].steps[i].travel_mode === 'TRANSIT') {
         var pathLatLngs = routeResponse.routes[0].legs[0].steps[i].lat_lngs;
@@ -109,7 +105,6 @@ function Train() {
   };
 
   this.departTrain = function (response) {
-    console.log('setpolyline this', this);
     this.journeyCoordinates = this.getPolylinePath(response);
     this.pathPolyLine = this.makePolyline(this.journeyCoordinates, false, this.lineColor, 1, 4, [{
       icon: {
@@ -120,20 +115,19 @@ function Train() {
       offset: '0%'
     }], this.map);
     this.pathPolyLine.setMap(tubeMap.map);
-    this.duration = this.getDuration(response);
+    // this.duration = this.getDuration(response);
+    console.log(this.duration);
     this.delay = 0;
     this.animateIcon.call(this, this.pathPolyLine, this.duration, this.delay);
   };
 
   this.googleJourneyRequest = function (callback) {
-    console.log('journey request this:', this);
     var self = this;
     self.directionsService.route({
       origin: this.origin,
       destination: this.destination,
       travelMode: 'TRANSIT'
     }, function (response, status) {
-      console.log('journey callback this:', self);
       if (status === 'OK') {
         console.log('google whole route response: ', response);
         callback.call(self, response);
@@ -141,12 +135,59 @@ function Train() {
     });
   };
 
-  this.random = function () {
-    console.log('random this', this);
-  };
-
   this.addTrainTag = function () {
     $('\n      <li class="c-menu__item train train' + tubeApp.trainCounter + '" style="background-color: ' + this.lineColor + '">\n        <ul>\n          <li class="from">From</li>\n          <li class="originName">' + this.originName + '</li>\n          <li class="to">To</li>\n          <li class="destinationName">' + this.destinationName + '</li>\n        </ul>\n      </li>\n    ').insertAfter('.c-menu__item:first').hide().slideDown('fast');
+  };
+
+  this.loseLastTwoWords = function (string) {
+    var lastIndex = string.lastIndexOf(' ');
+    string = string.substring(0, lastIndex);
+    lastIndex = string.lastIndexOf(' ');
+    string = string.substring(0, lastIndex);
+    return string;
+  };
+
+  this.getStationsNextDeparture = function (callback) {
+    var _this = this;
+
+    var self = this;
+    console.log('this next departure', this);
+    var stationName = this.loseLastTwoWords(this.journeyStoppointsNameArray[this.departureIndex]);
+    var nextStationId = this.journeyStoppointsIdArray[this.departureIndex];
+    $.get('http://localhost:3000/tfl/StopPoint/' + stationName + '/Arrivals/' + nextStationId).done(function (response) {
+      console.log('tfl next departure response:', response);
+      if (!response.timeToStation) {
+        setTimeout(function () {
+          return _this.getStationsNextDeparture(stationName, nextStationId, callback);
+        }, 15000);
+      } else {
+        self.nextDeparture = response;
+        self.duration = self.nextDeparture.timeToStation;
+        return console.log('next departure', self.nextDeparture);
+      }
+    });
+  };
+
+  this.getjourneyStoppointsArray = function (origin, destination, callback) {
+    var _this2 = this;
+
+    var idArray = [];
+    var nameArray = [];
+    $.get('http://localhost:3000/tfl/Journey/JourneyResults/' + origin + '/to/' + destination).done(function (route) {
+      var legs = route.journeys[0].legs;
+      var stopPoints = legs[0].path.stopPoints;
+      $.each(legs, function (index, leg) {
+        if (leg.path.stopPoints.length > stopPoints.length) {
+          stopPoints = leg.path.stopPoints;
+        }
+      });
+      nameArray.push(_this2.originName);
+      $.each(stopPoints, function (index, stopPoint) {
+        idArray.push(stopPoint.id);
+        nameArray.push(stopPoint.name);
+      });
+      return callback.call(_this2, idArray, nameArray);
+    });
   };
 
   this.init = function () {
@@ -156,11 +197,14 @@ function Train() {
     this.originName = $('option[value="' + this.origin + '"]:first').text();
     this.destination = $('#destination').val();
     this.destinationName = $('option[value="' + this.destination + '"]:first').text();
+    this.getjourneyStoppointsArray(this.origin, this.destination, function (idArray, nameArray) {
+      this.journeyStoppointsNameArray = nameArray;
+      this.journeyStoppointsIdArray = idArray;
+      this.getStationsNextDeparture(null);
+      this.googleJourneyRequest.call(this, this.departTrain);
+    });
     this.addTrainTag.call(this);
-    console.log('init this', this);
-    this.random.call(this);
     this.directionsService = new google.maps.DirectionsService();
-    this.googleJourneyRequest.call(this, this.departTrain);
     tubeApp.trainCounter += 1;
   }.call(this);
 }
@@ -212,9 +256,7 @@ function App() {
     var method = $(e.target).attr('method');
     var data = $(e.target).serialize();
     var url = '' + this.serverUrl + $(e.target).attr('action');
-    console.log(data);
     function doneCallback(data) {
-      console.log(data);
       if (data.user && data.user.firstName) {
         (function () {
           if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
@@ -233,7 +275,6 @@ function App() {
       }
     }
     function failCallback(data) {
-      console.log(data.responseJSON.message);
       $('\n        <li class="c-menu__item error">\n          <div class="input-container">\n            <h3>' + data.responseJSON.message + '</h3>\n            </div>\n        </li>\n      ').insertBefore('#c-menu--slide-left-login .c-menu__item:first').hide().slideDown('fast');
     }
     this.ajaxRequest(url, method, data, doneCallback, failCallback);
@@ -246,7 +287,6 @@ function App() {
     var data = $(e.target).serialize();
     var url = '' + this.serverUrl + $(e.target).attr('action');
     function doneCallback(data) {
-      console.log(data);
       if (data.user && data.user.firstName) {
         (function () {
           if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
@@ -265,7 +305,6 @@ function App() {
       }
     }
     function failCallback(data) {
-      console.log(data.responseJSON.message);
       $('\n        <li class="c-menu__item error">\n          <div class="input-container">\n            <h3>Please try again.</h3>\n            </div>\n        </li>\n      ').insertBefore('#c-menu--slide-left-register .c-menu__item:first').hide().slideDown('fast');
     }
     this.ajaxRequest(url, method, data, doneCallback, failCallback);
@@ -292,7 +331,6 @@ function App() {
   };
 
   this.loggedOutState = function () {
-    console.log('logged out state');
     $('.loggedOut').show();
     $('.loggedIn').hide();
     $('.c-menu__item.success').remove();

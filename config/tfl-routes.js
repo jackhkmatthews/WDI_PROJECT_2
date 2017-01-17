@@ -5,7 +5,7 @@ const tfls = require('../controllers/tfls.js');
 router.route('/Journey/JourneyResults/:origin/to/:destination')
   .get(tfls.journeyResults);
 
-router.route('/StopPoint/:stationId/Arrivals/:stationCommonName/:direction/:nextStationCommonName')
+router.route('/StopPoint/:stationName/Arrivals/:nextStationId')
   .get(tfls.stopPointArrivals);
 
 router.route('/endStopPoint/:nextStationId/Arrivals/:stationCommonName')

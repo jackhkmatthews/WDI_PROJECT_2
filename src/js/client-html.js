@@ -1,4 +1,16 @@
-const tubeLineColors = ['#B36305', '#E32017', '#ffce00', '#00782A', '#F3A9BB', '#A0A5A9', '#9B0056', '#000000', '#003688', '#0098D4', '#95CDBA'];
+const tubeLineColors = [
+  '#B36305',
+  '#E32017',
+  '#ffce00',
+  '#00782A',
+  '#F3A9BB',
+  '#A0A5A9',
+  '#9B0056',
+  '#000000',
+  '#003688',
+  '#0098D4',
+  '#95CDBA'
+];
 
 const tubeLineIds = [
   'bakerloo',
@@ -38,7 +50,6 @@ html.getstopPointsArray = function getstopPointsArray(callback){
   const array = [];
   $.get(`http://localhost:3000/api/stopPoints`)
     .done(data => {
-      console.log(data);
       const stations = data.stopPoints;
       $.each(stations, (index, station) => {
         const element = {
@@ -83,12 +94,9 @@ html.populateLineSelect = function(){
 
 html.populateStopPointSelects = function(e){
   const lineId = $(e.target).val();
-  console.log('value:', lineId);
   const stopPoints = [];
   $(html.stopPointsArray).each((index, stopPoint) => {
-    console.log('stoppointsarray', html.stopPointsArray);
     $(stopPoint.lineIds).each((index, stopPointlineId) => {
-      console.log('stop point line id', stopPointlineId);
       if(stopPointlineId === lineId){
         stopPoints.push(stopPoint);
       }
@@ -99,7 +107,6 @@ html.populateStopPointSelects = function(e){
 };
 
 html.populateStopPointSelect = function(stopPoints, jquerySelector){
-  console.log('stopPoints', stopPoints);
   $(jquerySelector).html('');
   $(stopPoints).each((index, stopPoint) => {
     $(jquerySelector).append(`

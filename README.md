@@ -95,4 +95,7 @@ different skins
 -refactoring css and classes link an absolute legend.  feels great.
 - authentication and menu functionality and styling
 - re-writing seeds logic to account for stoppoints having more than one line setTimeout, promises, schema, model
-- 
+- trying to plug in tfl departure data
+- got journey stoppoints array
+- figuring out logic to filter arrivals in right direction
+- smashing 'this' and callbacks - see train init and get journey stoppoints array functions.

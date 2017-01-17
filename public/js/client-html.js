@@ -15,7 +15,6 @@ html.getData = function () {
 html.getstopPointsArray = function getstopPointsArray(callback) {
   var array = [];
   $.get('http://localhost:3000/api/stopPoints').done(function (data) {
-    console.log(data);
     var stations = data.stopPoints;
     $.each(stations, function (index, station) {
       var element = {
@@ -58,12 +57,9 @@ html.populateLineSelect = function () {
 
 html.populateStopPointSelects = function (e) {
   var lineId = $(e.target).val();
-  console.log('value:', lineId);
   var stopPoints = [];
   $(html.stopPointsArray).each(function (index, stopPoint) {
-    console.log('stoppointsarray', html.stopPointsArray);
     $(stopPoint.lineIds).each(function (index, stopPointlineId) {
-      console.log('stop point line id', stopPointlineId);
       if (stopPointlineId === lineId) {
         stopPoints.push(stopPoint);
       }
@@ -74,7 +70,6 @@ html.populateStopPointSelects = function (e) {
 };
 
 html.populateStopPointSelect = function (stopPoints, jquerySelector) {
-  console.log('stopPoints', stopPoints);
   $(jquerySelector).html('');
   $(stopPoints).each(function (index, stopPoint) {
     $(jquerySelector).append('\n      <option value="' + stopPoint.lat + ', ' + stopPoint.lng + '">' + stopPoint.commonName + '</option>\n      ');
