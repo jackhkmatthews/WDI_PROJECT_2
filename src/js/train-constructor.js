@@ -23,6 +23,7 @@ function Train() {
   // ...............vaiables......................
   // _____________________________________________
 
+  this.number = tubeApp.trainCounter;
   this.line;
   this.lineColor;
   this.iconColor;
@@ -42,14 +43,12 @@ function Train() {
   this.removeOldSection = function(polyline){
     polyline.setMap(null);
     polyline = null;
+    $(`.train${this.number +1}`).remove();
   };
 
   this.getCountIncriment = function getCountIncriment(duration, animationRefreshRate){
-    console.log('duration in get countIncriment', duration);
     const numberOfIntervals = duration / animationRefreshRate;
-    console.log('number of intervals in getCountIncriment', numberOfIntervals);
     const distancePercentagePerInterval = 100 / numberOfIntervals;
-    console.log('distancePercentagePerInterval:', distancePercentagePerInterval);
     return distancePercentagePerInterval;
   };
 
@@ -107,63 +106,31 @@ function Train() {
 
   this.animateIcon = function(polyline, duration) {
     const self = this;
-    console.log('duration in animate', duration);
     this.count = 0;
     this.countIncriment = this.getCountIncriment(duration, this.animationRefreshRate);
-    console.log('this.countIncriment', this.countIncriment);
-    // function please(){
-    //   const interval = setInterval(function() {
-    //     if (parseFloat(polyline.icons[0].offset.split('%')[0]) > 99) {
-    //       self.removeOldSection(this.pathPolyLine, interval);
-    //       $(`.train${tubeApp.trainCounter - 1}`).remove();
-    //       return console.log('finished journey');
-    //     }
-    //     polyline.icons[0].offset = (count) + '%';
-    //     polyline.set('icons', polyline.icons);
-    //     count += this.countIncriment;
-    //   }, self.animationRefreshRate);
-    // }
-    // please();
     const intervalId = function intervalId(){
       const interval = setInterval(function() {
         self.count += self.countIncriment;
         if (self.count > 99.5) {
-          self.removeOldSection(polyline, interval);
-          // tubeMap.removeOldSection(tubeMap.pathPolyLine);
-          // if(tubeMap.journeyStationsArray.length === tubeMap.destinationIndex){
+          self.removeOldSection.call(self, polyline);
           clearInterval(interval);
           return console.log('finished journey');
-          // }
-          // tubeMap.initNextSection();
-          // return;
         }
-        console.log(self.count + '%');
         polyline.icons[0].offset = (self.count) + '%';
         polyline.set('icons', polyline.icons);
       }, self.animationRefreshRate);
     };
     setTimeout(intervalId, 0);
-
   };
 
-  this.departTrain = function(){ //can put 'response' back in
+  this.departTrain = function(){
     console.log('4. departing train');
-    // this.journeyCoordinates = this.getPolylinePath(this.googleJourneyResponse);
-    // this.pathPolyLine = this.makePolyline(this.journeyCoordinates, false, this.lineColor, 1, 4, [{
-    //   icon: {
-    //     path: 0,
-    //     scale: 8,
-    //     strokeColor: this.lineColor
-    //   },
-    //   offset: '0%'
-    // }], this.map);
-    // this.pathPolyLine.setMap(tubeMap.map);
     this.duration = this.getDuration(this.googleJourneyResponse);
     console.log('duration before animate', this.duration);
     this.animateIcon.call(this, this.pathPolyLine, this.duration);
   };
 
-  this.getStationsNextDeparture = function (){ //add in callback
+  this.getStationsNextDeparture = function (){
     const self = this;
     const stationName = this.loseLastTwoWords(this.journeyStoppointsNameArray[this.departureIndex]);
     const nextStationId = this.journeyStoppointsIdArray[this.departureIndex];
@@ -175,6 +142,7 @@ function Train() {
           return self.getStationsNextDeparture();
         }, 15000);
       } else {
+        $(`.train${this.number +1}.error`).slideUp('fast');
         self.nextDeparture = response;
         self.timeToFirstStation = self.nextDeparture.timeToStation;
         return self.departTrain();
@@ -235,6 +203,11 @@ function Train() {
 
   this.addTrainTag = function() {
     $(`
+      <li class="c-menu__item error train${tubeApp.trainCounter}">
+        <div class="input-container">
+          <h3 style="border-top: 3px solid ${this.lineColor};">Awaiting departure</h3>
+        </div>
+      </li>
       <li class="c-menu__item train train${tubeApp.trainCounter}" style="background-color: ${this.lineColor}">
       <ul>
       <li class="from">From</li>

@@ -3,7 +3,7 @@ const tubeLineColors = [
   '#E32017',
   '#ffce00',
   '#00782A',
-  '#F3A9BB',
+  '#d799af',
   '#A0A5A9',
   '#9B0056',
   '#000000',

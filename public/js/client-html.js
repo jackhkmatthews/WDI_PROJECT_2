@@ -1,6 +1,6 @@
 'use strict';
 
-var tubeLineColors = ['#B36305', '#E32017', '#ffce00', '#00782A', '#F3A9BB', '#A0A5A9', '#9B0056', '#000000', '#003688', '#0098D4', '#95CDBA'];
+var tubeLineColors = ['#B36305', '#E32017', '#ffce00', '#00782A', '#d799af', '#A0A5A9', '#9B0056', '#000000', '#003688', '#0098D4', '#95CDBA'];
 
 var tubeLineIds = ['bakerloo', 'central', 'circle', 'district', 'hammersmith-city', 'jubilee', 'metropolitan', 'northern', 'piccadilly', 'victoria', 'waterloo-city'];
 
