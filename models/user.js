@@ -30,8 +30,8 @@ userSchema
   .virtual('passwordConfirmation')
   .set(setPasswordConfirmation);
 
-function setPasswordConfirmation(password){
-  this._passwordConfirmation = password;
+function setPasswordConfirmation(passwordConfirmation){
+  this._passwordConfirmation = passwordConfirmation;
 }
 
 userSchema
