@@ -21,14 +21,14 @@ var slideLeftRegister = new Menu({
   maskId: '#c-mask'
 });
 
-var slideLeftBtn = $('#c-button--slide-left-menu');
+// var slideLeftBtn = $('#c-button--slide-left-menu');
 var slideLeftBtnLogin = $('#c-button--slide-left-login');
 var slideLeftBtnRegister = $('#c-button--slide-left-register');
 
-slideLeftBtn.on('click', function (e) {
-  e.preventDefault;
-  slideLeft.open();
-});
+// slideLeftBtn.on('click', function(e) {
+//   e.preventDefault;
+//   slideLeft.open();
+// });
 
 slideLeftBtnLogin.on('click', function (e) {
   e.preventDefault;

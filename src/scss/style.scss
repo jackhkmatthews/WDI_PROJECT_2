@@ -69,19 +69,35 @@ body.has-active-menu {
 
 /***********Logo*****************************/
 
+// .tube-logo {
+//   height: 323px;
+//   width: 323px;
+//   position: absolute;
+//   top: calc(50vh - 161px);
+//   left: -161px;
+//   border: 55px solid #dc241f;
+//   border-radius: 171px;
+//   box-sizing: border-box;
+//   transition: opacity, 0.3s;
+//   opacity: 0.5;
+//   background-color: #fff;
+// }
+
 .tube-logo {
   height: 323px;
   width: 323px;
   position: absolute;
   top: calc(50vh - 161px);
-  left: -161px;
+  left: calc(50% - 161px);
   border: 55px solid #dc241f;
   border-radius: 171px;
   box-sizing: border-box;
-  transition: opacity, 0.3s;
-  opacity: 0.5;
+  transition: opacity 0.3s, left 1.5s;
+  opacity: 1;
   background-color: #fff;
+  box-shadow: rgba(0, 0, 0, 0.360784) 0px 10px 10px;
 }
+
 
 .tube-logo h1 {
   font-size: 44px;
@@ -100,7 +116,7 @@ body.has-active-menu {
 }
 
 .tube-logo:hover {
-  opacity: 1;
+  opacity: 1 !important;
 }
 
 /***********panes****************************/

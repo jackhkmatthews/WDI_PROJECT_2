@@ -101,4 +101,6 @@ different skins
 - smashing 'this' and callbacks - see train init and get journey stoppoints array functions.
 - smahinf this and callbacks, see control flow of train now with tfl departure info
 - if blank then recheck logic
+- spent ages trying to slow down trains.  was due to tubeMap.animatino rate
+- added awaiting departure message and removal off old trains
 - 

@@ -11,7 +11,13 @@ function Map() {
     this.directionsService = new google.maps.DirectionsService();
     this.map = new google.maps.Map(document.getElementById('map'), {
       zoom: this.mapZoom,
-      center: this.mapCenter
+      center: this.mapCenter,
+      zoomControl: true,
+      mapTypeControl: false,
+      scaleControl: false,
+      streetViewControl: false,
+      rotateControl: false,
+      fullscreenControl: false
       // disableDefaultUI: true
     });
   };
@@ -362,6 +368,26 @@ function App() {
     $('.loggedIn').show();
   };
 
+  this.animateIntro = function () {
+    $('.animate-intro').on('click', function (e) {
+      if (e) e.preventDefault();
+      var div = document.getElementsByClassName('tube-logo')[0];
+      div.style.left = '-161px';
+      $('.tube-logo').css({ 'opacity': '0.5' });
+      $('.tube-logo-menu-button').removeClass('.tube-logo-menu-button');
+      $('#c-button--slide-left-menu').on('click', function (e) {
+        e.preventDefault;
+        slideLeft.open();
+      });
+      setTimeout(function () {
+        // $('.tube-logo h1').slideUp('slow', function(){
+        $('.tube-logo h1').text('Menu Menu');
+        // $('.tube-logo h1').slideDown('slow');
+        // });
+      }, 2000);
+    });
+  };
+
   this.init = function () {
     if (this.getToken()) {
       this.loggedInState();
@@ -374,6 +400,7 @@ function App() {
     $('form.register').on('submit', this.registerForm.bind(this));
     $('form.login').on('submit', this.loginForm.bind(this));
     $('#logout').on('click', this.logout.bind(this));
+    this.animateIntro();
   };
 }
 
