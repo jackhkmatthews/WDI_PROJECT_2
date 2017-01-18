@@ -330,13 +330,15 @@ function App() {
       }
     }
     function failCallback(data) {
-      $('\n        <li class="c-menu__item error">\n          <div class="input-container">\n            <h3>Please try again.</h3>\n            </div>\n        </li>\n      ').insertBefore('#c-menu--slide-left-register .c-menu__item:first').hide().slideDown('fast');
+      if (!$('.c-menu__item error')) {
+        $('\n          <li class="c-menu__item error">\n            <div class="input-container">\n              <h3>Please try again.</h3>\n              </div>\n          </li>\n        ').insertBefore('#c-menu--slide-left-register .c-menu__item:first').hide().slideDown('fast');
+      }
     }
     this.ajaxRequest(url, method, data, doneCallback, failCallback);
   };
 
   this.newTrain = function (e) {
-    if (e) e.preventDefault;
+    if (e) e.preventDefault();
     this['train' + this.trainCounter] = new Train();
   };
 
@@ -376,14 +378,11 @@ function App() {
       $('.tube-logo').css({ 'opacity': '0.5' });
       $('.tube-logo-menu-button').removeClass('.tube-logo-menu-button');
       $('#c-button--slide-left-menu').on('click', function (e) {
-        e.preventDefault;
+        e.preventDefault();
         slideLeft.open();
       });
       setTimeout(function () {
-        // $('.tube-logo h1').slideUp('slow', function(){
         $('.tube-logo h1').text('Menu Menu');
-        // $('.tube-logo h1').slideDown('slow');
-        // });
       }, 2000);
     });
   };
