@@ -356,15 +356,18 @@ function App(){
       }
     }
     function failCallback(data){
-      $(`
-        <li class="c-menu__item error">
-          <div class="input-container">
-            <h3>Please try again.</h3>
-            </div>
-        </li>
-      `).insertBefore('#c-menu--slide-left-register .c-menu__item:first').hide().slideDown('fast');
+      if (!$('.c-menu__item error')){
+        $(`
+          <li class="c-menu__item error">
+            <div class="input-container">
+              <h3>Please try again.</h3>
+              </div>
+          </li>
+        `).insertBefore('#c-menu--slide-left-register .c-menu__item:first').hide().slideDown('fast');
+      }
     }
     this.ajaxRequest(url, method, data, doneCallback, failCallback);
+
   };
 
   this.newTrain = function(e){
