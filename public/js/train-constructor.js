@@ -263,6 +263,7 @@ function App() {
     }).done(function (data) {
       doneCallback(data);
     }).fail(function (data) {
+      console.log('.fail');
       failCallback(data);
     });
   };
@@ -330,7 +331,8 @@ function App() {
       }
     }
     function failCallback(data) {
-      if (!$('.c-menu__item error')) {
+      console.log('inside fail callback');
+      if (!$('.c-menu__item.error h3').text()) {
         $('\n          <li class="c-menu__item error">\n            <div class="input-container">\n              <h3>Please try again.</h3>\n              </div>\n          </li>\n        ').insertBefore('#c-menu--slide-left-register .c-menu__item:first').hide().slideDown('fast');
       }
     }

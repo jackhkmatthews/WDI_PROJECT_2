@@ -274,6 +274,7 @@ function App(){
     }).done(data => {
       doneCallback(data);
     }).fail(data => {
+      console.log('.fail');
       failCallback(data);
     });
   };
@@ -356,7 +357,8 @@ function App(){
       }
     }
     function failCallback(data){
-      if (!$('.c-menu__item error')){
+      console.log('inside fail callback');
+      if (!$('.c-menu__item.error h3').text()){
         $(`
           <li class="c-menu__item error">
             <div class="input-container">

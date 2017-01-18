@@ -39,7 +39,8 @@ userSchema
   .validate(validatePasswordConfirmation);
 
 function validatePasswordConfirmation(){
-  if (!this.isNew){
+  console.log('validatePasswordConfirmation');
+  if (this.isNew){
     if (!this._password){
       return this.invalidate('password', 'a password is required');
     }
