@@ -136,7 +136,7 @@ function Map() {
   //returns all StopPoint name and latlng
   this.getstopPointsObject = function getstopPointsObject() {
     var object = {};
-    $.get('http://localhost:3000/api/stopPoints').done(function (data) {
+    $.get('https://tube-map.herokuapp.com/api/stopPoints').done(function (data) {
       var stations = data.stopPoints;
       $.each(stations, function (index, station) {
         object[station.commonName] = {

@@ -48,7 +48,7 @@ html.getData = function() {
 
 html.getstopPointsArray = function getstopPointsArray(callback){
   const array = [];
-  $.get(`http://localhost:3000/api/stopPoints`)
+  $.get(`https://tube-map.herokuapp.com/api/stopPoints`)
     .done(data => {
       const stations = data.stopPoints;
       $.each(stations, (index, station) => {

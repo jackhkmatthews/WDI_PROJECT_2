@@ -1,3 +1,58 @@
+#WDI-PROJECT-2
+
+##Brief
+
+We were asked to use an external web api merged with the google maps javascript api to create a map based single page web application.
+
+As an MVP, the app needed to be served by our own node.js express web server, allow user authentication via JSON web tokens, bcrypt and our own web api linked via mongoose to a mongo database and plot the data gained from the external web API of our choice onto a google map via the google maps api's markers.
+
+##Toy-Tube-Map
+
+After considering a few ideas, I decided to try and build my own version of a live tube map, where animated tube carriages would be visible to the user in near real time - informed by TFL's Unified API.
+
+I initially considered mapping and animating all of London's tube carriages simultaneously however decided it to be beyond the scope of the project and almost definitely beyond my current ability. Instead I decided the user would have to add their own trains to the map one by one by first selecting the line and then an origin and destination station. The trains would then depart in near real time using information from TFL's unified API.
+
+##Screenshots
+
+Landing page
+<img width="1269" alt="screen shot 2017-02-06 at 09 54 06" src="https://cloud.githubusercontent.com/assets/20629455/22642530/fd69de92-ec52-11e6-8613-86a0708411ac.png">
+Login
+<img width="1269" alt="screen shot 2017-02-06 at 09 56 54" src="https://cloud.githubusercontent.com/assets/20629455/22642534/fd6b482c-ec52-11e6-95da-b22e0f018a4b.png">
+Register
+<img width="1269" alt="screen shot 2017-02-06 at 09 58 03" src="https://cloud.githubusercontent.com/assets/20629455/22642535/fd6eb2fa-ec52-11e6-9fca-89c8b3f0f227.png">
+Form to add new train to map
+<img width="1269" alt="screen shot 2017-02-06 at 09 54 33" src="https://cloud.githubusercontent.com/assets/20629455/22642533/fd6afbec-ec52-11e6-97ec-900f49cd3924.png">
+First train departed, others awaiting departure.
+<img width="1269" alt="screen shot 2017-02-06 at 09 56 41" src="https://cloud.githubusercontent.com/assets/20629455/22642532/fd6a5732-ec52-11e6-826c-8ea73084dcb1.png">
+Tube carriages moving along their lines
+<img width="1269" alt="screen shot 2017-02-06 at 09 58 18" src="https://cloud.githubusercontent.com/assets/20629455/22642531/fd69f9ea-ec52-11e6-82a9-534cf1958169.png">
+
+
+##Control Flow
+
+- The user is first presented with the tube logo superimpossed over a full screen google map centred over central London.
+
+##Challanges
+
+##Wins
+
+##Known issues to be addressed
+
+##Features which could be added
+
+##Technologies Used
+
+As this project was a culmination of almost everything I covered during the GA WDI course before the start of the project I thought it useful to state broadly state the technologies and methods used for this project. 
+
+###Back-end
+
+Node.js, Express, Gulp, Mongo, Mongoose, JSON web tokens, bcrypt, ES6. 
+
+###Front-end
+
+JavaScript, HTML, CSS, SCSS, Object Orientation, AJAX request, Google Maps JavaScript API, TFL Unified API, User Authentication.
+
+
 # WDI_PROJECT_2
 My second General Assembly Web Development Immersive project
 

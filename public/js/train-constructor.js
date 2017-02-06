@@ -346,7 +346,7 @@ function App() {
 
   this.getStopPointsObject = function () {
     var object = {};
-    $.get('http://localhost:3000/api/stopPoints').done(function (data) {
+    $.get('https://tube-map.herokuapp.com/api/stopPoints').done(function (data) {
       var stations = data.stopPoints;
       $.each(stations, function (index, station) {
         object[station.commonName] = {
