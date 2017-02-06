@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const StopPoints = require('../controllers/StopPoints.js');
+const stopPoints = require('../controllers/stopPoints.js');
 
 router.route('/stopPoints')
-  .get(StopPoints.index);
+  .get(stopPoints.index);
 
 
 

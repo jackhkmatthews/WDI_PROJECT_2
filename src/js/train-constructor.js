@@ -377,7 +377,7 @@ function App(){
     this['train' + this.trainCounter] = new Train();
   };
 
-  this.getStopPointsObject = function(){
+  this.getstopPointsObject = function(){
     const object = {};
     $.get(`https://tube-map.herokuapp.com/api/stopPoints`)
       .done(data => {
@@ -429,7 +429,7 @@ function App(){
     } else {
       this.loggedOutState();
     }
-    this.stopPointsObject = this.getStopPointsObject();
+    this.stopPointsObject = this.getstopPointsObject();
     tubeMap.init();
     $('.submit.train').on('click', this.newTrain.bind(this));
     $('form.register').on('submit', this.registerForm.bind(this));

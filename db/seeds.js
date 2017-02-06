@@ -15,10 +15,10 @@ function tflsLinesRequest(req, res) {
     const lines = JSON.parse(htmlString);
     lines.forEach(function(line) {
       console.log(line.name);
-      return tflsLineToStopPoints(req, res, line);
+      return tflsLineTostopPoints(req, res, line);
     });
     setTimeout(function(){
-      return tflStopPointsToDb(req, res, stopPoints);
+      return tflstopPointsToDb(req, res, stopPoints);
     }, 10000);
   })
   .catch(err => {
@@ -26,8 +26,8 @@ function tflsLinesRequest(req, res) {
   });
 }
 
-function tflsLineToStopPoints(req, res, line){
-  rp(`https://api.tfl.gov.uk/Line/${line.id}/StopPoints?app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
+function tflsLineTostopPoints(req, res, line){
+  rp(`https://api.tfl.gov.uk/Line/${line.id}/stopPoints?app_id=835d0307&app_key=42620817a4da70de276d15fc45a73e1a`)
   .then(htmlString => {
     const stations = JSON.parse(htmlString);
     stations.forEach(function(station) {
@@ -60,7 +60,7 @@ function arrayObjectIndexOf(myArray, searchTerm, property) {
   return -1;
 }
 
-function tflStopPointsToDb(req, res, stopPoints){
+function tflstopPointsToDb(req, res, stopPoints){
   stopPoints.forEach(function(stopPoint){
     const doc = new StopPoint({
       'commonName': stopPoint.commonName,
