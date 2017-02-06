@@ -140,7 +140,7 @@ function Train() {
     const self = this;
     const stationName = this.loseLastTwoWords(this.journeyStoppointsNameArray[this.departureIndex]);
     const nextStationId = this.journeyStoppointsIdArray[this.departureIndex];
-    $.get(`https://tube-map.herokuapp.com/tfl/StopPoint/${stationName}/Arrivals/${nextStationId}`)
+    $.get(`${window.location.origin}/tfl/StopPoint/${stationName}/Arrivals/${nextStationId}`)
     .done(response => {
       console.log('3. tfl next departure response:', response);
       if (!response.timeToStation){
@@ -188,7 +188,7 @@ function Train() {
   this.getjourneyStoppointsArray = function (origin, destination, callback){
     const idArray = [];
     const nameArray = [];
-    $.get(`https://tube-map.herokuapp.com/tfl/Journey/JourneyResults/${origin}/to/${destination}`)
+    $.get(`${window.location.origin}/tfl/Journey/JourneyResults/${origin}/to/${destination}`)
     .done(route => {
       const legs = route.journeys[0].legs;
       let stopPoints = legs[0].path.stopPoints;
@@ -248,7 +248,7 @@ function Train() {
 function App(){
   this.stopPointsObject;
   this.trainCounter = 0;
-  this.serverUrl = 'https://tube-map.herokuapp.com';
+  this.serverUrl = `${window.location.origin}`;
 
   this.removeToken = function(){
     window.localStorage.clear();
@@ -379,7 +379,7 @@ function App(){
 
   this.getstopPointsObject = function(){
     const object = {};
-    $.get(`https://tube-map.herokuapp.com/api/stopPoints`)
+    $.get(`${window.location.origin}/api/stopPoints`)
       .done(data => {
         const stations = data.stopPoints;
         $.each(stations, (index, station) => {

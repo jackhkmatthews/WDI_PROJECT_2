@@ -136,7 +136,7 @@ function Map() {
   //returns all StopPoint name and latlng
   this.getstopPointsObject = function getstopPointsObject() {
     var object = {};
-    $.get('https://tube-map.herokuapp.com/api/stopPoints').done(function (data) {
+    $.get(window.location.origin + '/api/stopPoints').done(function (data) {
       var stations = data.stopPoints;
       $.each(stations, function (index, station) {
         object[station.commonName] = {
@@ -152,7 +152,7 @@ function Map() {
   //returns all names of stations between specified stopPoints
   this.getJourneyStationsArray = function getJourneyStationsArray(origin, destination, callback) {
     var array = [];
-    $.get('https://tube-map.herokuapp.com/tfl/Journey/JourneyResults/' + origin + '/to/' + destination).done(function (route) {
+    $.get(window.location.origin + '/tfl/Journey/JourneyResults/' + origin + '/to/' + destination).done(function (route) {
       var legs = route.journeys[0].legs;
       var stopPoints = legs[0].path.stopPoints;
       // let departurePoint = legs[0].departurePoint.commonName;
@@ -218,7 +218,7 @@ function Map() {
 
     console.log('inside getStationsNextArrival function', stationId);
     var nextArrival = {};
-    $.get('https://tube-map.herokuapp.com/tfl/StopPoint/' + stationId + '/Arrivals/' + stationCommonName + '/' + direction + '/' + nextStationCommonName).done(function (response) {
+    $.get(window.location.origin + '/tfl/StopPoint/' + stationId + '/Arrivals/' + stationCommonName + '/' + direction + '/' + nextStationCommonName).done(function (response) {
       console.log('tfl next arrival response:', response);
       if (response.message === 'end of line') {
         var nextStationId = tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex + 1]].id;
@@ -241,7 +241,7 @@ function Map() {
     var _this2 = this;
 
     var endStationsNextDeparture = {};
-    $.get('https://tube-map.herokuapp.com/tfl/endStopPoint/' + nextStationId + '/Arrivals/' + stationCommonName).done(function (response) {
+    $.get(window.location.origin + '/tfl/endStopPoint/' + nextStationId + '/Arrivals/' + stationCommonName).done(function (response) {
       if (!response.timeToStation) {
         console.log('response is an empty object: ' + response);
         setTimeout(function () {

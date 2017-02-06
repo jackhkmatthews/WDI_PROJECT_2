@@ -40,7 +40,7 @@ gulp.task('fonts', () => {
 
 gulp.task('serve', ['es6', 'sass'], () => {
   browserSync.init({
-    proxy: 'https://tube-map.herokuapp.com',
+    proxy: 'http://localhost:3000',
     files: ['public/**/*.*'],
     browser: 'google chrome',
     port: 7000,

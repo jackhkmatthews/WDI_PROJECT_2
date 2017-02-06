@@ -133,7 +133,7 @@ function Map(){
   //returns all StopPoint name and latlng
   this.getstopPointsObject = function getstopPointsObject(){
     const object = {};
-    $.get(`https://tube-map.herokuapp.com/api/stopPoints`)
+    $.get(`${window.location.origin}/api/stopPoints`)
       .done(data => {
         const stations = data.stopPoints;
         $.each(stations, (index, station) => {
@@ -150,7 +150,7 @@ function Map(){
   //returns all names of stations between specified stopPoints
   this.getJourneyStationsArray = function getJourneyStationsArray(origin, destination, callback){
     const array = [];
-    $.get(`https://tube-map.herokuapp.com/tfl/Journey/JourneyResults/${origin}/to/${destination}`)
+    $.get(`${window.location.origin}/tfl/Journey/JourneyResults/${origin}/to/${destination}`)
       .done(route => {
         const legs = route.journeys[0].legs;
         let stopPoints = legs[0].path.stopPoints;
@@ -215,7 +215,7 @@ function Map(){
   this.getStationsNextArrival = function getStationsNextArrival(stationId, stationCommonName, direction, nextStationCommonName, callback){
     console.log('inside getStationsNextArrival function', stationId);
     let nextArrival = {};
-    $.get(`https://tube-map.herokuapp.com/tfl/StopPoint/${stationId}/Arrivals/${stationCommonName}/${direction}/${nextStationCommonName}`)
+    $.get(`${window.location.origin}/tfl/StopPoint/${stationId}/Arrivals/${stationCommonName}/${direction}/${nextStationCommonName}`)
       .done(response => {
         console.log('tfl next arrival response:', response);
         if (response.message === 'end of line') {
@@ -237,7 +237,7 @@ function Map(){
   //in specified direction
   this.getEndStationsNextDeparture = function getEndStationsNextDeparture(stationCommonName, nextStationId, callback){
     let endStationsNextDeparture = {};
-    $.get(`https://tube-map.herokuapp.com/tfl/endStopPoint/${nextStationId}/Arrivals/${stationCommonName}`)
+    $.get(`${window.location.origin}/tfl/endStopPoint/${nextStationId}/Arrivals/${stationCommonName}`)
       .done(response => {
         if(!response.timeToStation) {
           console.log(`response is an empty object: ${response}`);
