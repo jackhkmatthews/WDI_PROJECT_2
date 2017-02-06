@@ -1,6 +1,6 @@
 const express = require('express');
-const router = express.Router();
-const tfls = require('../controllers/tfls.js');
+const router  = express.Router();
+const tfls    = require('../controllers/tfls.js');
 
 router.route('/Journey/JourneyResults/:origin/to/:destination')
   .get(tfls.journeyResults);

@@ -1,5 +1,3 @@
-const rp = require('request-promise');
-const mongoose = require('mongoose');
 const StopPoint = require('../models/stopPoint');
 
 function stopPointsIndex (req, res){
