@@ -13,8 +13,10 @@ html.getData = function () {
 };
 
 html.getstopPointsArray = function getstopPointsArray(callback) {
+  console.log('inside getstopPointsArray function');
   var array = [];
   $.get(window.location.origin + '/api/stopPoints').done(function (data) {
+    console.log('ajax request data:', data);
     var stations = data.stopPoints;
     $.each(stations, function (index, station) {
       var element = {

@@ -47,9 +47,11 @@ html.getData = function() {
 };
 
 html.getstopPointsArray = function getstopPointsArray(callback){
+  console.log('inside getstopPointsArray function');
   const array = [];
   $.get(`${window.location.origin}/api/stopPoints`)
     .done(data => {
+      console.log('ajax request data:', data);
       const stations = data.stopPoints;
       $.each(stations, (index, station) => {
         const element = {
