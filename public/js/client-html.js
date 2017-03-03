@@ -15,6 +15,7 @@ html.getData = function () {
 html.getstopPointsArray = function getstopPointsArray(callback) {
   console.log('inside getstopPointsArray function');
   var array = [];
+  console.log('get request URL:', window.location.origin + '/api/stopPoints');
   $.get(window.location.origin + '/api/stopPoints').done(function (data) {
     console.log('ajax request data:', data);
     var stations = data.stopPoints;
