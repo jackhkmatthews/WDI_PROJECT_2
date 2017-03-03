@@ -284,18 +284,16 @@ function App() {
     var url = '' + this.serverUrl + $(e.target).attr('action');
     function doneCallback(data) {
       if (data.user && data.user.firstName) {
-        (function () {
-          if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
-          $('form.login').slideUp('fast');
-          var success = $('\n          <li class="c-menu__item success">\n            <div class="input-container">\n              <h3>Welcome back!</h3>\n              </div>\n          </li>\n        ');
-          success.hide();
-          $('#c-menu--slide-left-login .c-menu__items').prepend(success);
-          setTimeout(function () {
-            success.slideDown('fast');
-          }, 300);
-          if (data.token) self.setToken(data.token);
-          self.loggedInState();
-        })();
+        if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
+        $('form.login').slideUp('fast');
+        var success = $('\n          <li class="c-menu__item success">\n            <div class="input-container">\n              <h3>Welcome back!</h3>\n              </div>\n          </li>\n        ');
+        success.hide();
+        $('#c-menu--slide-left-login .c-menu__items').prepend(success);
+        setTimeout(function () {
+          success.slideDown('fast');
+        }, 300);
+        if (data.token) self.setToken(data.token);
+        self.loggedInState();
       } else {
         console.log('something went wrong when logining in user. data returned: ', data);
       }
@@ -314,18 +312,16 @@ function App() {
     var url = '' + this.serverUrl + $(e.target).attr('action');
     function doneCallback(data) {
       if (data.user && data.user.firstName) {
-        (function () {
-          if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
-          $('form.register').slideUp('fast');
-          var success = $('\n          <li class="c-menu__item success">\n            <div class="input-container">\n              <h3>Welcome!</h3>\n              <p>' + data.user.favouriteLine + ' line ay? One of the greats!</p>\n              </div>\n          </li>\n        ');
-          success.hide();
-          $('#c-menu--slide-left-register .c-menu__items').prepend(success);
-          setTimeout(function () {
-            success.slideDown('fast');
-          }, 300);
-          if (data.token) self.setToken(data.token);
-          self.loggedInState();
-        })();
+        if ($('.c-menu__item.error')) $('.c-menu__item.error').slideUp('fast');
+        $('form.register').slideUp('fast');
+        var success = $('\n          <li class="c-menu__item success">\n            <div class="input-container">\n              <h3>Welcome!</h3>\n              <p>' + data.user.favouriteLine + ' line ay? One of the greats!</p>\n              </div>\n          </li>\n        ');
+        success.hide();
+        $('#c-menu--slide-left-register .c-menu__items').prepend(success);
+        setTimeout(function () {
+          success.slideDown('fast');
+        }, 300);
+        if (data.token) self.setToken(data.token);
+        self.loggedInState();
       } else {
         console.log('something went wrong when logining in user. data returned: ', data);
       }

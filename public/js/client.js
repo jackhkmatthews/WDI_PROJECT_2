@@ -99,30 +99,28 @@ function Map() {
       travelMode: 'TRANSIT'
     }, function (response, status) {
       if (status === 'OK') {
-        (function () {
-          console.log('google next section response: ', response);
-          tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
-          tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
-            icon: {
-              path: google.maps.SymbolPath.CIRCLE,
-              scale: 8,
-              strokeColor: '#393'
-            },
-            offset: '0%'
-          }], tubeMap.map);
-          tubeMap.pathPolyLine.setMap(tubeMap.map);
-          var duration = tubeMap.getDuration(response);
-          var stationId = tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id;
-          var stationCommonName = tubeMap.journeyStationsArray[tubeMap.originIndex].split(' ')[0];
-          var nextStationCommonName = tubeMap.journeyStationsArray[tubeMap.originIndex + 1].split(' ')[0];
-          var callback = function callback(nextArrival) {
-            tubeMap.nextArrival = nextArrival;
-            var delay = tubeMap.nextArrival.timeToStation * 1000;
-            tubeMap.animateIcon(tubeMap.pathPolyLine, duration / 200, delay / 200);
-          };
-          tubeMap.getStationsNextArrival(stationId, stationCommonName, tubeMap.direction, nextStationCommonName, callback);
-          // tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
-        })();
+        console.log('google next section response: ', response);
+        tubeMap.pathCoordinates = tubeMap.getPolylinePath(response);
+        tubeMap.pathPolyLine = tubeMap.makePolyline(tubeMap.pathCoordinates, false, '#000', 0.8, 3, [{
+          icon: {
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8,
+            strokeColor: '#393'
+          },
+          offset: '0%'
+        }], tubeMap.map);
+        tubeMap.pathPolyLine.setMap(tubeMap.map);
+        var duration = tubeMap.getDuration(response);
+        var stationId = tubeMap.stopPointsObject[tubeMap.journeyStationsArray[tubeMap.originIndex]].id;
+        var stationCommonName = tubeMap.journeyStationsArray[tubeMap.originIndex].split(' ')[0];
+        var nextStationCommonName = tubeMap.journeyStationsArray[tubeMap.originIndex + 1].split(' ')[0];
+        var callback = function callback(nextArrival) {
+          tubeMap.nextArrival = nextArrival;
+          var delay = tubeMap.nextArrival.timeToStation * 1000;
+          tubeMap.animateIcon(tubeMap.pathPolyLine, duration / 200, delay / 200);
+        };
+        tubeMap.getStationsNextArrival(stationId, stationCommonName, tubeMap.direction, nextStationCommonName, callback);
+        // tubeMap.animateIcon(tubeMap.pathPolyLine, duration, delay);
       } else {
         window.alert('Directions request failed due to ' + status);
       }
