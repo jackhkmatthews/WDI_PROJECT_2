@@ -1,4 +1,4 @@
-#WDI-PROJECT-2 - [Toy Tube Map](https://tube-map.herokuapp.com/)
+#GA WDI24 Project 2 - [Toy Tube Map](https://tube-map.herokuapp.com/)
 
 ##Local Setup
 1. Clone or download the repository and navigate to it's root in terminal.
